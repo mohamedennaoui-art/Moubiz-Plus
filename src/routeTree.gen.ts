@@ -13,6 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ContributionRouteImport } from './routes/contribution'
 import { Route as EcheancesRouteImport } from './routes/echeances'
 import { Route as ImpotRouteImport } from './routes/impot'
+import { Route as FacturesIndexRouteImport } from './routes/factures.index'
+import { Route as FacturesNouvelleRouteImport } from './routes/factures.nouvelle'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +36,32 @@ const ImpotRoute = ImpotRouteImport.update({
   path: '/impot',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FacturesIndexRoute = FacturesIndexRouteImport.update({
+  id: '/factures/',
+  path: '/factures/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FacturesNouvelleRoute = FacturesNouvelleRouteImport.update({
+  id: '/factures/nouvelle',
+  path: '/factures/nouvelle',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/contribution': typeof ContributionRoute
   '/echeances': typeof EcheancesRoute
   '/impot': typeof ImpotRoute
+  '/factures/nouvelle': typeof FacturesNouvelleRoute
+  '/factures/': typeof FacturesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contribution': typeof ContributionRoute
   '/echeances': typeof EcheancesRoute
   '/impot': typeof ImpotRoute
+  '/factures/nouvelle': typeof FacturesNouvelleRoute
+  '/factures': typeof FacturesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +69,34 @@ export interface FileRoutesById {
   '/contribution': typeof ContributionRoute
   '/echeances': typeof EcheancesRoute
   '/impot': typeof ImpotRoute
+  '/factures/nouvelle': typeof FacturesNouvelleRoute
+  '/factures/': typeof FacturesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/contribution' | '/echeances' | '/impot'
+  fullPaths:
+    | '/'
+    | '/contribution'
+    | '/echeances'
+    | '/impot'
+    | '/factures/nouvelle'
+    | '/factures/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/contribution' | '/echeances' | '/impot'
-  id: '__root__' | '/' | '/contribution' | '/echeances' | '/impot'
+  to:
+    | '/'
+    | '/contribution'
+    | '/echeances'
+    | '/impot'
+    | '/factures/nouvelle'
+    | '/factures'
+  id:
+    | '__root__'
+    | '/'
+    | '/contribution'
+    | '/echeances'
+    | '/impot'
+    | '/factures/nouvelle'
+    | '/factures/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +104,8 @@ export interface RootRouteChildren {
   ContributionRoute: typeof ContributionRoute
   EcheancesRoute: typeof EcheancesRoute
   ImpotRoute: typeof ImpotRoute
+  FacturesNouvelleRoute: typeof FacturesNouvelleRoute
+  FacturesIndexRoute: typeof FacturesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +138,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ImpotRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/factures/': {
+      id: '/factures/'
+      path: '/factures'
+      fullPath: '/factures/'
+      preLoaderRoute: typeof FacturesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/factures/nouvelle': {
+      id: '/factures/nouvelle'
+      path: '/factures/nouvelle'
+      fullPath: '/factures/nouvelle'
+      preLoaderRoute: typeof FacturesNouvelleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +160,8 @@ const rootRouteChildren: RootRouteChildren = {
   ContributionRoute: ContributionRoute,
   EcheancesRoute: EcheancesRoute,
   ImpotRoute: ImpotRoute,
+  FacturesNouvelleRoute: FacturesNouvelleRoute,
+  FacturesIndexRoute: FacturesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
