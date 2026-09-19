@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ContributionRouteImport } from './routes/contribution'
+import { Route as EcheancesRouteImport } from './routes/echeances'
+import { Route as ImpotRouteImport } from './routes/impot'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContributionRoute = ContributionRouteImport.update({
+  id: '/contribution',
+  path: '/contribution',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EcheancesRoute = EcheancesRouteImport.update({
+  id: '/echeances',
+  path: '/echeances',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpotRoute = ImpotRouteImport.update({
+  id: '/impot',
+  path: '/impot',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/contribution': typeof ContributionRoute
+  '/echeances': typeof EcheancesRoute
+  '/impot': typeof ImpotRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/contribution': typeof ContributionRoute
+  '/echeances': typeof EcheancesRoute
+  '/impot': typeof ImpotRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/contribution': typeof ContributionRoute
+  '/echeances': typeof EcheancesRoute
+  '/impot': typeof ImpotRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/contribution' | '/echeances' | '/impot'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/contribution' | '/echeances' | '/impot'
+  id: '__root__' | '/' | '/contribution' | '/echeances' | '/impot'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ContributionRoute: typeof ContributionRoute
+  EcheancesRoute: typeof EcheancesRoute
+  ImpotRoute: typeof ImpotRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contribution': {
+      id: '/contribution'
+      path: '/contribution'
+      fullPath: '/contribution'
+      preLoaderRoute: typeof ContributionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/echeances': {
+      id: '/echeances'
+      path: '/echeances'
+      fullPath: '/echeances'
+      preLoaderRoute: typeof EcheancesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/impot': {
+      id: '/impot'
+      path: '/impot'
+      fullPath: '/impot'
+      preLoaderRoute: typeof ImpotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ContributionRoute: ContributionRoute,
+  EcheancesRoute: EcheancesRoute,
+  ImpotRoute: ImpotRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
