@@ -10,33 +10,128 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ContributionRouteImport } from './routes/contribution'
+import { Route as EcheancesRouteImport } from './routes/echeances'
+import { Route as ImpotRouteImport } from './routes/impot'
+import { Route as ProfilRouteImport } from './routes/profil'
+import { Route as FacturesIndexRouteImport } from './routes/factures.index'
+import { Route as FacturesIdRouteImport } from './routes/factures.$id'
+import { Route as FacturesNouvelleRouteImport } from './routes/factures.nouvelle'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContributionRoute = ContributionRouteImport.update({
+  id: '/contribution',
+  path: '/contribution',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EcheancesRoute = EcheancesRouteImport.update({
+  id: '/echeances',
+  path: '/echeances',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpotRoute = ImpotRouteImport.update({
+  id: '/impot',
+  path: '/impot',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfilRoute = ProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FacturesIndexRoute = FacturesIndexRouteImport.update({
+  id: '/factures/',
+  path: '/factures/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FacturesIdRoute = FacturesIdRouteImport.update({
+  id: '/factures/$id',
+  path: '/factures/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FacturesNouvelleRoute = FacturesNouvelleRouteImport.update({
+  id: '/factures/nouvelle',
+  path: '/factures/nouvelle',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/contribution': typeof ContributionRoute
+  '/echeances': typeof EcheancesRoute
+  '/impot': typeof ImpotRoute
+  '/profil': typeof ProfilRoute
+  '/factures/$id': typeof FacturesIdRoute
+  '/factures/nouvelle': typeof FacturesNouvelleRoute
+  '/factures/': typeof FacturesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/contribution': typeof ContributionRoute
+  '/echeances': typeof EcheancesRoute
+  '/impot': typeof ImpotRoute
+  '/profil': typeof ProfilRoute
+  '/factures/$id': typeof FacturesIdRoute
+  '/factures/nouvelle': typeof FacturesNouvelleRoute
+  '/factures': typeof FacturesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/contribution': typeof ContributionRoute
+  '/echeances': typeof EcheancesRoute
+  '/impot': typeof ImpotRoute
+  '/profil': typeof ProfilRoute
+  '/factures/$id': typeof FacturesIdRoute
+  '/factures/nouvelle': typeof FacturesNouvelleRoute
+  '/factures/': typeof FacturesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/contribution'
+    | '/echeances'
+    | '/impot'
+    | '/profil'
+    | '/factures/$id'
+    | '/factures/nouvelle'
+    | '/factures/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/contribution'
+    | '/echeances'
+    | '/impot'
+    | '/profil'
+    | '/factures/$id'
+    | '/factures/nouvelle'
+    | '/factures'
+  id:
+    | '__root__'
+    | '/'
+    | '/contribution'
+    | '/echeances'
+    | '/impot'
+    | '/profil'
+    | '/factures/$id'
+    | '/factures/nouvelle'
+    | '/factures/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ContributionRoute: typeof ContributionRoute
+  EcheancesRoute: typeof EcheancesRoute
+  ImpotRoute: typeof ImpotRoute
+  ProfilRoute: typeof ProfilRoute
+  FacturesIdRoute: typeof FacturesIdRoute
+  FacturesNouvelleRoute: typeof FacturesNouvelleRoute
+  FacturesIndexRoute: typeof FacturesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +143,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contribution': {
+      id: '/contribution'
+      path: '/contribution'
+      fullPath: '/contribution'
+      preLoaderRoute: typeof ContributionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/echeances': {
+      id: '/echeances'
+      path: '/echeances'
+      fullPath: '/echeances'
+      preLoaderRoute: typeof EcheancesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/impot': {
+      id: '/impot'
+      path: '/impot'
+      fullPath: '/impot'
+      preLoaderRoute: typeof ImpotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profil': {
+      id: '/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof ProfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/factures/': {
+      id: '/factures/'
+      path: '/factures'
+      fullPath: '/factures/'
+      preLoaderRoute: typeof FacturesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/factures/$id': {
+      id: '/factures/$id'
+      path: '/factures/$id'
+      fullPath: '/factures/$id'
+      preLoaderRoute: typeof FacturesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/factures/nouvelle': {
+      id: '/factures/nouvelle'
+      path: '/factures/nouvelle'
+      fullPath: '/factures/nouvelle'
+      preLoaderRoute: typeof FacturesNouvelleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ContributionRoute: ContributionRoute,
+  EcheancesRoute: EcheancesRoute,
+  ImpotRoute: ImpotRoute,
+  ProfilRoute: ProfilRoute,
+  FacturesIdRoute: FacturesIdRoute,
+  FacturesNouvelleRoute: FacturesNouvelleRoute,
+  FacturesIndexRoute: FacturesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
