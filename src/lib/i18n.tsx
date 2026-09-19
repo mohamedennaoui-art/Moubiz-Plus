@@ -142,7 +142,11 @@ export const dict: Dict = {
 
 type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (k: keyof typeof dict) => string };
 
-const I18nContext = createContext<Ctx>({ lang: "fr", setLang: () => {}, t: (k) => dict[k].fr });
+const I18nContext = createContext<Ctx>({
+  lang: "fr",
+  setLang: () => {},
+  t: (k) => dict[k]?.fr ?? String(k),
+});
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("fr");
