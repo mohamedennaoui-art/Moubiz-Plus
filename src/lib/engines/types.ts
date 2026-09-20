@@ -13,8 +13,14 @@ export type Profile = {
   remindersEnabled: boolean;
 };
 
+export type LocationType = "MUNICIPAL" | "OUTSIDE_MUNICIPAL";
+export type TaxPeriod = "Q1" | "Q2" | "Q3" | "Q4" | "annual";
+
 export type TaxInputs = {
+  /** Fiscal year, e.g. "2026". */
   period: string;
+  taxPeriod: TaxPeriod;
+  locationType: LocationType;
   turnover: number;
   activity: ActivityType;
 };
@@ -25,6 +31,7 @@ export type EngineResult = {
   steps: { label: string; value: string }[];
   explanation: string;
   rulesLoaded: boolean;
+  details?: unknown;
 };
 
 export type TaxRecord = { inputs: TaxInputs; result: EngineResult; calculatedAt: string };

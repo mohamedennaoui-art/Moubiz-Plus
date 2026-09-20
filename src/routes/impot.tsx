@@ -4,8 +4,8 @@ import { AppShell } from "@/components/AppShell";
 import { Button, Card, Field, Input, PageTitle, Select } from "@/components/ui-kit";
 import { formatMoney, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
-import { computeTax } from "@/lib/engines/tax";
-import type { ActivityType } from "@/lib/engines/types";
+import { computeTax, currentQuarter } from "@/lib/engines/tax";
+import type { ActivityType, LocationType, TaxPeriod } from "@/lib/engines/types";
 
 export const Route = createFileRoute("/impot")({
   head: () => ({
@@ -30,16 +30,31 @@ function TaxPage() {
   const [activity, setActivity] = useState<ActivityType>(
     data.tax?.inputs.activity ?? data.profile.activity,
   );
+  const [locationType, setLocationType] = useState<LocationType>(
+    data.tax?.inputs.locationType ?? "MUNICIPAL",
+  );
+  const [taxPeriod, setTaxPeriod] = useState<TaxPeriod>(
+    data.tax?.inputs.taxPeriod ?? currentQuarter(),
+  );
   const [showResult, setShowResult] = useState(Boolean(data.tax));
 
   const submit = () => {
-    const inputs = { period, turnover: Number(turnover) || 0, activity };
+    const inputs = {
+      period,
+      taxPeriod,
+      locationType,
+      turnover: Number(turnover) || 0,
+      activity,
+    };
     const result = computeTax(inputs);
     update({ tax: { inputs, result, calculatedAt: new Date().toISOString() } });
     setShowResult(true);
   };
 
   const record = data.tax;
+  const ceilingWarning = record
+    ? (record.result.details as { ceilingWarning?: string | null } | undefined)?.ceilingWarning
+    : null;
 
   return (
     <AppShell>
@@ -66,6 +81,24 @@ function TaxPage() {
               <option value="craft">{t("activity_craft")}</option>
             </Select>
           </Field>
+          <Field label={t("location_type")}>
+            <Select
+              value={locationType}
+              onChange={(e) => setLocationType(e.target.value as LocationType)}
+            >
+              <option value="MUNICIPAL">{t("loc_municipal")}</option>
+              <option value="OUTSIDE_MUNICIPAL">{t("loc_outside")}</option>
+            </Select>
+          </Field>
+          <Field label={t("calc_period")}>
+            <Select value={taxPeriod} onChange={(e) => setTaxPeriod(e.target.value as TaxPeriod)}>
+              <option value="Q1">Q1</option>
+              <option value="Q2">Q2</option>
+              <option value="Q3">Q3</option>
+              <option value="Q4">Q4</option>
+              <option value="annual">{t("period_annual")}</option>
+            </Select>
+          </Field>
           <Button onClick={submit}>{t("calculate")}</Button>
         </Card>
       ) : (
@@ -80,6 +113,15 @@ function TaxPage() {
               </p>
               <p className="mt-2 text-sm text-muted-foreground">{record.result.explanation}</p>
             </Card>
+
+            {ceilingWarning && (
+              <Card>
+                <p className="rounded-xl border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm font-semibold text-destructive">
+                  {ceilingWarning}
+                </p>
+              </Card>
+            )}
+
 
             <Card>
               <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
