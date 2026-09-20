@@ -70,7 +70,7 @@ const defaultData: AppData = {
   },
   tax: null,
   social: null,
-  deadlines: defaultDeadlines,
+  deadlines: [],
   invoices: [],
 };
 
@@ -89,12 +89,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    let next: AppData = { ...defaultData, deadlines: demoDeadlines() };
     try {
       const raw = window.localStorage.getItem(KEY);
-      if (raw) setData({ ...defaultData, ...(JSON.parse(raw) as AppData) });
+      if (raw) next = { ...next, ...(JSON.parse(raw) as AppData) };
     } catch {
       /* ignore corrupt storage */
     }
+    setData(next);
     setReady(true);
   }, []);
 
