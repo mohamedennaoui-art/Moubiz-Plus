@@ -78,6 +78,24 @@ function TaxPage() {
               <option value="craft">{t("activity_craft")}</option>
             </Select>
           </Field>
+          <Field label={t("location_type")}>
+            <Select
+              value={locationType}
+              onChange={(e) => setLocationType(e.target.value as LocationType)}
+            >
+              <option value="MUNICIPAL">{t("loc_municipal")}</option>
+              <option value="OUTSIDE_MUNICIPAL">{t("loc_outside")}</option>
+            </Select>
+          </Field>
+          <Field label={t("calc_period")}>
+            <Select value={taxPeriod} onChange={(e) => setTaxPeriod(e.target.value as TaxPeriod)}>
+              <option value="Q1">Q1</option>
+              <option value="Q2">Q2</option>
+              <option value="Q3">Q3</option>
+              <option value="Q4">Q4</option>
+              <option value="annual">{t("period_annual")}</option>
+            </Select>
+          </Field>
           <Button onClick={submit}>{t("calculate")}</Button>
         </Card>
       ) : (
