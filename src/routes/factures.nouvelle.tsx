@@ -82,6 +82,11 @@ function NewInvoicePage() {
           <p className="text-sm text-muted-foreground">
             {data.profile.name || "—"} · {data.profile.identifier || "—"}
           </p>
+          <Link to="/profil">
+            <Button variant="outline" className="w-full">
+              {t("edit_data")}
+            </Button>
+          </Link>
         </Card>
 
         <Card className="grid gap-3">
