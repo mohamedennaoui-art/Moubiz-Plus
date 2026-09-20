@@ -52,6 +52,9 @@ function TaxPage() {
   };
 
   const record = data.tax;
+  const ceilingWarning = record
+    ? (record.result.details as { ceilingWarning?: string | null } | undefined)?.ceilingWarning
+    : null;
 
   return (
     <AppShell>
