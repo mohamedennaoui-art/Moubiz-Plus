@@ -15,26 +15,47 @@ type AppData = {
   invoices: Invoice[];
 };
 
-const defaultDeadlines: Deadline[] = [
-  {
-    id: "d1",
-    type: "tax",
-    labelFr: "Déclaration / paiement de l'impôt",
-    labelAr: "التصريح / دفع الضريبة",
-    dueDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 15).toISOString(),
-    amount: null,
-    done: false,
-  },
-  {
-    id: "d2",
-    type: "social",
-    labelFr: "Contribution sociale",
-    labelAr: "المساهمة الاجتماعية",
-    dueDate: new Date(new Date().getFullYear(), new Date().getMonth() + 2, 20).toISOString(),
-    amount: null,
-    done: false,
-  },
-];
+/**
+ * Demo deadlines for interface testing only — dates are relative to today.
+ * Real obligation rules can replace this generator without UI changes.
+ * Generated on the client only, to keep server and client HTML identical.
+ */
+function demoDeadlines(): Deadline[] {
+  const today = new Date();
+  const at = (days: number) => {
+    const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + days);
+    return d.toISOString();
+  };
+  return [
+    {
+      id: "d1",
+      type: "tax",
+      labelFr: "Déclaration / paiement de l'impôt",
+      labelAr: "التصريح / دفع الضريبة",
+      dueDate: at(6),
+      amount: null,
+      done: false,
+    },
+    {
+      id: "d2",
+      type: "social",
+      labelFr: "Contribution sociale",
+      labelAr: "المساهمة الاجتماعية",
+      dueDate: at(24),
+      amount: null,
+      done: false,
+    },
+    {
+      id: "d3",
+      type: "tax",
+      labelFr: "Déclaration annuelle",
+      labelAr: "التصريح السنوي",
+      dueDate: at(95),
+      amount: null,
+      done: false,
+    },
+  ];
+}
 
 const defaultData: AppData = {
   profile: {
