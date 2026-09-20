@@ -4,8 +4,8 @@ import { AppShell } from "@/components/AppShell";
 import { Button, Card, Field, Input, PageTitle, Select } from "@/components/ui-kit";
 import { formatMoney, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
-import { computeTax } from "@/lib/engines/tax";
-import type { ActivityType } from "@/lib/engines/types";
+import { computeTax, currentQuarter } from "@/lib/engines/tax";
+import type { ActivityType, LocationType, TaxPeriod } from "@/lib/engines/types";
 
 export const Route = createFileRoute("/impot")({
   head: () => ({
