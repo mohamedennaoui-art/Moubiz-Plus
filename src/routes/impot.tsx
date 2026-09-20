@@ -111,6 +111,15 @@ function TaxPage() {
               <p className="mt-2 text-sm text-muted-foreground">{record.result.explanation}</p>
             </Card>
 
+            {ceilingWarning && (
+              <Card>
+                <p className="rounded-xl border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm font-semibold text-destructive">
+                  {ceilingWarning}
+                </p>
+              </Card>
+            )}
+
+
             <Card>
               <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
                 {t("taxable_info")}
