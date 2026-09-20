@@ -30,10 +30,22 @@ function TaxPage() {
   const [activity, setActivity] = useState<ActivityType>(
     data.tax?.inputs.activity ?? data.profile.activity,
   );
+  const [locationType, setLocationType] = useState<LocationType>(
+    data.tax?.inputs.locationType ?? "MUNICIPAL",
+  );
+  const [taxPeriod, setTaxPeriod] = useState<TaxPeriod>(
+    data.tax?.inputs.taxPeriod ?? currentQuarter(),
+  );
   const [showResult, setShowResult] = useState(Boolean(data.tax));
 
   const submit = () => {
-    const inputs = { period, turnover: Number(turnover) || 0, activity };
+    const inputs = {
+      period,
+      taxPeriod,
+      locationType,
+      turnover: Number(turnover) || 0,
+      activity,
+    };
     const result = computeTax(inputs);
     update({ tax: { inputs, result, calculatedAt: new Date().toISOString() } });
     setShowResult(true);
