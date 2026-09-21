@@ -106,19 +106,23 @@ function Dashboard() {
           </p>
           {next ? (
             <>
-              <p className="mt-2 text-lg font-bold">{next.labelFr}</p>
+              <p className="mt-2 text-lg font-bold">
+                {next.quarter} {next.year}
+              </p>
               <p className="text-sm text-muted-foreground">
                 {t("due_date")}: {formatDate(next.dueDate)}
               </p>
-              <div className="mt-2 flex items-center gap-2">
+              <div className="mt-2 flex flex-wrap items-center gap-2">
                 <Badge tone={tone}>
-                  {daysUntil(next.dueDate) >= 0
-                    ? `${daysUntil(next.dueDate)} ${t("days_left")}`
-                    : `${Math.abs(daysUntil(next.dueDate))} ${t("days_late")}`}
+                  {next.daysLeft >= 0
+                    ? `${next.daysLeft} ${t("days_left")}`
+                    : `${Math.abs(next.daysLeft)} ${t("days_late")}`}
                 </Badge>
-                <Badge tone={tone}>{t(`st_${statusKey ?? "upcoming"}` as never)}</Badge>
+                <Badge tone={tone}>
+                  {t("declaration")}: {t(`dec_${next.declaration}` as never)}
+                </Badge>
               </div>
-              {(statusKey === "urgent" || statusKey === "overdue") && (
+              {next.notification && (
                 <p className="mt-3 rounded-xl border border-destructive/40 bg-destructive/5 px-3 py-2 text-xs font-semibold text-destructive">
                   {t("alert_soon")}
                 </p>
