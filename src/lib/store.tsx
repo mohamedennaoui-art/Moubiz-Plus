@@ -6,6 +6,7 @@ import type {
   SocialRecord,
   TaxRecord,
 } from "./engines/types";
+import type { QuarterEntry } from "./engines/deadline-engine";
 
 type AppData = {
   profile: Profile;
@@ -75,6 +76,7 @@ const defaultData: AppData = {
   social: null,
   deadlines: [],
   invoices: [],
+  quarterEntries: {},
 };
 
 const KEY = "moubiz_plus_data_v1";
