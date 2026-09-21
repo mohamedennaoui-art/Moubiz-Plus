@@ -3,7 +3,7 @@ import { AppShell } from "@/components/AppShell";
 import { Badge, Button, Card } from "@/components/ui-kit";
 import { formatDate, formatMoney, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
-import { daysUntil, deadlineStatus, nextDeadline } from "@/lib/engines/deadlines";
+import { buildYear, nextObligation } from "@/lib/engines/deadline-engine";
 import { invoiceRemaining, invoiceTotal } from "@/lib/engines/invoices";
 
 export const Route = createFileRoute("/")({
@@ -29,7 +29,11 @@ export const Route = createFileRoute("/")({
 function Dashboard() {
   const { t } = useI18n();
   const { data } = useStore();
-  const next = nextDeadline(data.deadlines);
+  const next = data.profile.registrationDate
+    ? nextObligation(
+        buildYear(new Date().getFullYear(), data.profile.registrationDate, data.quarterEntries),
+      )
+    : null;
   const totalInvoiced = data.invoices.reduce((s, i) => s + invoiceTotal(i), 0);
   const totalPaid = data.invoices.reduce((s, i) => s + (i.paid || 0), 0);
   const totalRemaining = data.invoices.reduce((s, i) => s + invoiceRemaining(i), 0);
