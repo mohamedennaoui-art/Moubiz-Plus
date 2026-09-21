@@ -4,6 +4,8 @@ export type CurrencyCode = "TND" | "EUR" | "USD";
 
 export type Profile = {
   name: string;
+  /** ISO date of registration as Auto-Entrepreneur; drives the exemption engine. */
+  registrationDate: string;
   identifier: string;
   address: string;
   phone: string;

@@ -3,7 +3,7 @@ import { AppShell } from "@/components/AppShell";
 import { Badge, Button, Card } from "@/components/ui-kit";
 import { formatDate, formatMoney, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
-import { daysUntil, deadlineStatus, nextDeadline } from "@/lib/engines/deadlines";
+import { buildYear, nextObligation } from "@/lib/engines/deadline-engine";
 import { invoiceRemaining, invoiceTotal } from "@/lib/engines/invoices";
 
 export const Route = createFileRoute("/")({
@@ -29,18 +29,17 @@ export const Route = createFileRoute("/")({
 function Dashboard() {
   const { t } = useI18n();
   const { data } = useStore();
-  const next = nextDeadline(data.deadlines);
+  const next = data.profile.registrationDate
+    ? nextObligation(
+        buildYear(new Date().getFullYear(), data.profile.registrationDate, data.quarterEntries),
+      )
+    : null;
   const totalInvoiced = data.invoices.reduce((s, i) => s + invoiceTotal(i), 0);
   const totalPaid = data.invoices.reduce((s, i) => s + (i.paid || 0), 0);
   const totalRemaining = data.invoices.reduce((s, i) => s + invoiceRemaining(i), 0);
 
-  const statusKey = next ? deadlineStatus(next) : null;
-  const tone =
-    statusKey === "overdue" || statusKey === "urgent"
-      ? "danger"
-      : statusKey === "soon"
-        ? "warning"
-        : "info";
+  const late = next ? next.daysLeft < 0 : false;
+  const tone = late ? "danger" : next && next.daysLeft <= 15 ? "warning" : "info";
 
   return (
     <AppShell>
@@ -107,19 +106,23 @@ function Dashboard() {
           </p>
           {next ? (
             <>
-              <p className="mt-2 text-lg font-bold">{next.labelFr}</p>
+              <p className="mt-2 text-lg font-bold">
+                {next.quarter} {next.year}
+              </p>
               <p className="text-sm text-muted-foreground">
                 {t("due_date")}: {formatDate(next.dueDate)}
               </p>
-              <div className="mt-2 flex items-center gap-2">
+              <div className="mt-2 flex flex-wrap items-center gap-2">
                 <Badge tone={tone}>
-                  {daysUntil(next.dueDate) >= 0
-                    ? `${daysUntil(next.dueDate)} ${t("days_left")}`
-                    : `${Math.abs(daysUntil(next.dueDate))} ${t("days_late")}`}
+                  {next.daysLeft >= 0
+                    ? `${next.daysLeft} ${t("days_left")}`
+                    : `${Math.abs(next.daysLeft)} ${t("days_late")}`}
                 </Badge>
-                <Badge tone={tone}>{t(`st_${statusKey ?? "upcoming"}` as never)}</Badge>
+                <Badge tone={tone}>
+                  {t("declaration")}: {t(`dec_${next.declaration}` as never)}
+                </Badge>
               </div>
-              {(statusKey === "urgent" || statusKey === "overdue") && (
+              {next.notification && (
                 <p className="mt-3 rounded-xl border border-destructive/40 bg-destructive/5 px-3 py-2 text-xs font-semibold text-destructive">
                   {t("alert_soon")}
                 </p>

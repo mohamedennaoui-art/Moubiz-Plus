@@ -6,6 +6,7 @@ import type {
   SocialRecord,
   TaxRecord,
 } from "./engines/types";
+import type { QuarterEntry } from "./engines/deadline-engine";
 
 type AppData = {
   profile: Profile;
@@ -13,6 +14,8 @@ type AppData = {
   social: SocialRecord | null;
   deadlines: Deadline[];
   invoices: Invoice[];
+  /** Per-quarter declaration/payment records, keyed "2026-T1". */
+  quarterEntries: Record<string, QuarterEntry>;
 };
 
 /**
@@ -60,6 +63,7 @@ function demoDeadlines(): Deadline[] {
 const defaultData: AppData = {
   profile: {
     name: "",
+    registrationDate: "",
     identifier: "",
     address: "",
     phone: "",
@@ -72,6 +76,7 @@ const defaultData: AppData = {
   social: null,
   deadlines: [],
   invoices: [],
+  quarterEntries: {},
 };
 
 const KEY = "moubiz_plus_data_v1";

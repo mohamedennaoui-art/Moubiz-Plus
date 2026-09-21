@@ -46,6 +46,14 @@ function ProfilePage() {
           <Field label={t("name")}>
             <Input value={form.name} onChange={(e) => set({ name: e.target.value })} />
           </Field>
+          <Field label={t("registration_date")}>
+            <Input
+              type="date"
+              value={form.registrationDate?.slice(0, 10) ?? ""}
+              onChange={(e) => set({ registrationDate: e.target.value })}
+            />
+          </Field>
+          <p className="-mt-1 text-xs text-muted-foreground">{t("registration_note")}</p>
           <Field label={t("identifier")}>
             <Input value={form.identifier} onChange={(e) => set({ identifier: e.target.value })} />
           </Field>
