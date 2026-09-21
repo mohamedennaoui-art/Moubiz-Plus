@@ -13,6 +13,8 @@ type AppData = {
   social: SocialRecord | null;
   deadlines: Deadline[];
   invoices: Invoice[];
+  /** Per-quarter declaration/payment records, keyed "2026-T1". */
+  quarterEntries: Record<string, QuarterEntry>;
 };
 
 /**
@@ -60,6 +62,7 @@ function demoDeadlines(): Deadline[] {
 const defaultData: AppData = {
   profile: {
     name: "",
+    registrationDate: "",
     identifier: "",
     address: "",
     phone: "",
