@@ -38,13 +38,8 @@ function Dashboard() {
   const totalPaid = data.invoices.reduce((s, i) => s + (i.paid || 0), 0);
   const totalRemaining = data.invoices.reduce((s, i) => s + invoiceRemaining(i), 0);
 
-  const statusKey = next ? deadlineStatus(next) : null;
-  const tone =
-    statusKey === "overdue" || statusKey === "urgent"
-      ? "danger"
-      : statusKey === "soon"
-        ? "warning"
-        : "info";
+  const late = next ? next.daysLeft < 0 : false;
+  const tone = late ? "danger" : next && next.daysLeft <= 15 ? "warning" : "info";
 
   return (
     <AppShell>
