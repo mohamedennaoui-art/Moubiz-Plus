@@ -66,7 +66,29 @@ export function exemptionEnd(
   return quarterRange(plus.getUTCFullYear(), quarterOf(plus)).end;
 }
 
-export function isExempt(
+const dayOf = (d: Date) => Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+
+function parseDate(value: string | Date): Date | null {
+  const d = value instanceof Date ? value : new Date(value);
+  return !value || Number.isNaN(d.getTime()) ? null : d;
+}
+
+/**
+ * A quarter is an obligation only when it starts on or after the registration
+ * date. Periods running before the registration date never create obligations.
+ */
+export function hasObligation(year: number, q: QuarterKey, registrationDate: string | Date): boolean {
+  const reg = parseDate(registrationDate);
+  if (!reg) return false;
+  const { start } = quarterRange(year, q);
+  return dayOf(start) >= dayOf(reg);
+}
+
+/**
+ * Payment exemption: registration + 12 months, extended to the end of that
+ * quarter. The declaration always stays required — only the payment is exempt.
+ */
+export function isPaymentExempt(
   year: number,
   q: QuarterKey,
   registrationDate: string | Date,
@@ -74,14 +96,8 @@ export function isExempt(
 ): boolean {
   const limit = exemptionEnd(registrationDate, rules);
   if (!limit) return false;
-  const { end, start } = quarterRange(year, q);
-  const reg = registrationDate instanceof Date ? registrationDate : new Date(registrationDate);
-  // Quarters entirely before registration are not obligations at all.
-  if (end.getTime() < Date.UTC(reg.getUTCFullYear(), reg.getUTCMonth(), reg.getUTCDate())) {
-    return true;
-  }
-  void start;
-  return end.getTime() <= limit.getTime();
+  const { end } = quarterRange(year, q);
+  return dayOf(end) <= dayOf(limit);
 }
 
 export type DeclarationStatus = "todo" | "declared" | "late";
@@ -132,7 +148,9 @@ export type QuarterObligation = {
   start: string;
   end: string;
   dueDate: string;
-  exempt: boolean;
+  /** Payment is exempt during the exemption window; declaration stays required. */
+  paymentExempt: boolean;
+  declarationRequired: true;
   entry: QuarterEntry;
   declaration: DeclarationStatus;
   payment: PaymentStatus;
@@ -147,12 +165,12 @@ export function buildYear(
   now = new Date(),
   rules: DeadlineRules = deadlineRules,
 ): QuarterObligation[] {
-  return QUARTERS.map((q) => {
+  return QUARTERS.filter((q) => hasObligation(year, q, registrationDate)).map((q) => {
     const id = `${year}-${q}`;
     const { start, end } = quarterRange(year, q);
     const due = dueDateFor(year, q, rules);
     const entry = entries[id] ?? emptyEntry;
-    const exempt = isExempt(year, q, registrationDate, rules);
+    const paymentExempt = isPaymentExempt(year, q, registrationDate, rules);
     return {
       id,
       year,
@@ -160,28 +178,69 @@ export function buildYear(
       start: start.toISOString(),
       end: end.toISOString(),
       dueDate: due.toISOString(),
-      exempt,
+      paymentExempt,
+      declarationRequired: true as const,
       entry,
       declaration: declarationStatus(entry, due, now),
-      payment: paymentStatus(entry, due, now),
+      payment: paymentExempt ? "paid" : paymentStatus(entry, due, now),
       daysLeft: daysBetween(due, now),
-      notification: exempt ? null : notificationFor(due, now, rules),
+      notification: notificationFor(due, now, rules),
     };
   });
 }
 
+/** Builds several consecutive years of obligations, ordered by due date. */
+export function buildRange(
+  fromYear: number,
+  toYear: number,
+  registrationDate: string,
+  entries: Record<string, QuarterEntry> = {},
+  now = new Date(),
+  rules: DeadlineRules = deadlineRules,
+): QuarterObligation[] {
+  const out: QuarterObligation[] = [];
+  for (let y = fromYear; y <= toYear; y++) out.push(...buildYear(y, registrationDate, entries, now, rules));
+  return out.sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+}
+
 export function zeroDeclarationCount(list: QuarterObligation[]): number {
-  return list.filter((o) => !o.exempt && o.entry.declared && o.entry.turnover === 0).length;
+  return list.filter((o) => o.entry.declared && o.entry.turnover === 0).length;
 }
 
 export function unpaidContributionCount(list: QuarterObligation[]): number {
-  return list.filter((o) => !o.exempt && o.payment !== "paid").length;
+  return list.filter((o) => !o.paymentExempt && o.payment !== "paid").length;
 }
+
+/** Longest trailing run of declared quarters whose turnover is zero. */
+export function consecutiveZeroDeclarations(list: QuarterObligation[]): number {
+  const declared = list.filter((o) => o.entry.declared);
+  let run = 0;
+  for (let i = declared.length - 1; i >= 0; i--) {
+    if (declared[i]!.entry.turnover === 0) run++;
+    else break;
+  }
+  return run;
+}
+
+/** Longest trailing run of due, non-exempt quarters left unpaid. */
+export function consecutiveUnpaidContributions(list: QuarterObligation[], now = new Date()): number {
+  const due = list.filter((o) => !o.paymentExempt && daysBetween(new Date(o.dueDate), now) < 0);
+  let run = 0;
+  for (let i = due.length - 1; i >= 0; i--) {
+    if (!due[i]!.entry.paid) run++;
+    else break;
+  }
+  return run;
+}
+
+/** Warning thresholds — informative only, radiation is never automatic. */
+export const zeroDeclarationWarningAt = 5;
+export const unpaidWarningAt = 4;
 
 export function nextObligation(list: QuarterObligation[]): QuarterObligation | null {
   return (
     list
-      .filter((o) => !o.exempt && (o.declaration !== "declared" || o.payment !== "paid"))
+      .filter((o) => o.declaration !== "declared" || (!o.paymentExempt && o.payment !== "paid"))
       .sort((a, b) => a.dueDate.localeCompare(b.dueDate))[0] ?? null
   );
 }
