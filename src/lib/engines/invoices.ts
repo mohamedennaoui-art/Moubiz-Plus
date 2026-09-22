@@ -30,13 +30,19 @@ export function invoiceOverdue(inv: Invoice, now = new Date()): { late: boolean;
   return days > 0 ? { late: true, days } : { late: false, days: 0 };
 }
 
-/** Dashboard payment summary: unpaid invoice count and amount still to collect. */
-export function paymentSummary(invoices: Invoice[]) {
+/**
+ * Dashboard payment summary: unpaid invoice count and amount still to collect,
+ * expressed in TND using the user-configured rates (unconvertible ones skipped).
+ */
+export function paymentSummary(invoices: Invoice[], rates: Record<CurrencyCode, number>) {
   const open = invoices.filter((i) => i.status !== "draft" && invoiceRemaining(i) > 0);
-  return {
-    unpaidCount: open.length,
-    toCollect: open.reduce((s, i) => s + invoiceRemaining(i), 0),
-  };
+  const toCollect = open.reduce((s, i) => {
+    const rest = invoiceRemaining(i);
+    if (i.currency === "TND") return s + rest;
+    const conv = toTND(rest, i.currency, rates);
+    return conv == null ? s : s + conv;
+  }, 0);
+  return { unpaidCount: open.length, toCollect };
 }
 
 /** Currency conversion component — rates are configurable, none invented. */
