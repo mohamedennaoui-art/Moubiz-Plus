@@ -58,6 +58,51 @@ function Dashboard() {
 
       <div className="grid gap-4">
         <Card>
+          <div className="flex items-start justify-between gap-3">
+            <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+              {t("annual_turnover")}
+            </p>
+            <Field label="">
+              <Select
+                value={ceilingYear}
+                onChange={(e) => setCeilingYear(Number(e.target.value))}
+                className="py-1 text-xs"
+              >
+                {ceilingYears.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+          </div>
+          <p className="mt-2 text-2xl font-extrabold tracking-tight">
+            {formatMoney(ceiling.turnover)} / {formatMoney(ceiling.ceiling)}
+          </p>
+          <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className={
+                "h-full rounded-full " +
+                (ceiling.level === "ok"
+                  ? "bg-primary"
+                  : ceiling.level === "p80" || ceiling.level === "p90"
+                    ? "bg-warning"
+                    : "bg-destructive")
+              }
+              style={{ width: `${Math.min(100, Math.round(ceiling.percent))}%` }}
+            />
+          </div>
+          <p className="mt-2 text-xs font-semibold text-muted-foreground">
+            {Math.round(ceiling.percent)} % {t("ceiling_used")}
+          </p>
+          {ceiling.messageKey && (
+            <p className="mt-3 rounded-xl border border-destructive/40 bg-destructive/5 px-3 py-2 text-xs font-semibold text-destructive">
+              {t(ceiling.messageKey as never)}
+            </p>
+          )}
+        </Card>
+
+        <Card>
           <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
             {t("card_tax")}
           </p>
