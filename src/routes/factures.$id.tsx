@@ -5,6 +5,7 @@ import { formatDate, formatMoney, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 import {
   derivedStatus,
+  invoiceOverdue,
   invoiceRemaining,
   invoiceTotal,
   lineAmount,
@@ -64,6 +65,7 @@ function InvoiceDetail() {
   const total = invoiceTotal(invoice);
   const remaining = invoiceRemaining(invoice);
   const st = derivedStatus(invoice);
+  const overdue = invoiceOverdue(invoice);
   const tnd =
     invoice.currency === "TND" ? null : toTND(total, invoice.currency, data.profile.rates);
 
@@ -78,6 +80,11 @@ function InvoiceDetail() {
         <PageTitle title={`${t("card_invoices")} ${invoice.number}`} />
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <Badge tone={statusTone[st]}>{t(statusKey[st] as never)}</Badge>
+          {overdue.late && (
+            <Badge tone="danger">
+              {t("inv_late")} · {overdue.days} {t("days_late")}
+            </Badge>
+          )}
           <Button onClick={() => window.print()}>{t("download_pdf")}</Button>
           <Link to="/factures">
             <Button variant="outline">{t("invoice_history")}</Button>

@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { Badge, Button, Card } from "@/components/ui-kit";
+import { Badge, Button, Card, Select } from "@/components/ui-kit";
 import { formatDate, formatMoney, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 import { buildYear, nextObligation } from "@/lib/engines/deadline-engine";
-import { invoiceRemaining, invoiceTotal } from "@/lib/engines/invoices";
+import { invoiceRemaining, invoiceTotal, paymentSummary } from "@/lib/engines/invoices";
+import { annualTurnover, ceilingStatus } from "@/lib/engines/ceiling";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -29,6 +31,7 @@ export const Route = createFileRoute("/")({
 function Dashboard() {
   const { t } = useI18n();
   const { data } = useStore();
+  const [ceilingYear, setCeilingYear] = useState(new Date().getFullYear());
   const next = data.profile.registrationDate
     ? nextObligation(
         buildYear(new Date().getFullYear(), data.profile.registrationDate, data.quarterEntries),
@@ -37,6 +40,11 @@ function Dashboard() {
   const totalInvoiced = data.invoices.reduce((s, i) => s + invoiceTotal(i), 0);
   const totalPaid = data.invoices.reduce((s, i) => s + (i.paid || 0), 0);
   const totalRemaining = data.invoices.reduce((s, i) => s + invoiceRemaining(i), 0);
+  const summary = paymentSummary(data.invoices, data.profile.rates);
+  const ceiling = ceilingStatus(
+    annualTurnover(data.invoices, ceilingYear, data.profile.rates),
+  );
+  const ceilingYears = [ceilingYear - 1, ceilingYear, ceilingYear + 1];
 
   const late = next ? next.daysLeft < 0 : false;
   const tone = late ? "danger" : next && next.daysLeft <= 15 ? "warning" : "info";
@@ -49,6 +57,50 @@ function Dashboard() {
       </div>
 
       <div className="grid gap-4">
+        <Card>
+          <div className="flex items-start justify-between gap-3">
+            <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+              {t("annual_turnover")}
+            </p>
+            <Select
+              aria-label={t("year")}
+              value={ceilingYear}
+              onChange={(e) => setCeilingYear(Number(e.target.value))}
+              className="h-9 w-24 text-xs"
+            >
+              {ceilingYears.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <p className="mt-2 text-2xl font-extrabold tracking-tight">
+            {formatMoney(ceiling.turnover)} / {formatMoney(ceiling.ceiling)}
+          </p>
+          <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className={
+                "h-full rounded-full " +
+                (ceiling.level === "ok"
+                  ? "bg-primary"
+                  : ceiling.level === "p80" || ceiling.level === "p90"
+                    ? "bg-warning"
+                    : "bg-destructive")
+              }
+              style={{ width: `${Math.min(100, Math.round(ceiling.percent))}%` }}
+            />
+          </div>
+          <p className="mt-2 text-xs font-semibold text-muted-foreground">
+            {Math.round(ceiling.percent)} % {t("ceiling_used")}
+          </p>
+          {ceiling.messageKey && (
+            <p className="mt-3 rounded-xl border border-destructive/40 bg-destructive/5 px-3 py-2 text-xs font-semibold text-destructive">
+              {t(ceiling.messageKey as never)}
+            </p>
+          )}
+        </Card>
+
         <Card>
           <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
             {t("card_tax")}
@@ -158,6 +210,14 @@ function Dashboard() {
             <div>
               <dt className="text-muted-foreground">{t("total_remaining")}</dt>
               <dd className="text-lg font-bold">{formatMoney(totalRemaining)}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">{t("unpaid_invoices")}</dt>
+              <dd className="text-lg font-bold">{summary.unpaidCount}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">{t("to_collect")}</dt>
+              <dd className="text-lg font-bold">{formatMoney(summary.toCollect)}</dd>
             </div>
           </dl>
           <Link to="/factures/nouvelle" className="mt-4 block">
