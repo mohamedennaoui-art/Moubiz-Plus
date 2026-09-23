@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { Badge, Button, Card, Field, Select } from "@/components/ui-kit";
+import { Badge, Button, Card, Select } from "@/components/ui-kit";
 import { formatDate, formatMoney, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 import { buildYear, nextObligation } from "@/lib/engines/deadline-engine";

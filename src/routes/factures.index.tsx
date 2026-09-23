@@ -4,7 +4,12 @@ import { AppShell } from "@/components/AppShell";
 import { Badge, Button, Card, PageTitle } from "@/components/ui-kit";
 import { formatDate, formatMoney, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
-import { derivedStatus, invoiceRemaining, invoiceTotal } from "@/lib/engines/invoices";
+import {
+  derivedStatus,
+  invoiceOverdue,
+  invoiceRemaining,
+  invoiceTotal,
+} from "@/lib/engines/invoices";
 import type { InvoiceStatus } from "@/lib/engines/types";
 
 export const Route = createFileRoute("/factures/")({
@@ -78,6 +83,7 @@ function InvoicesPage() {
         <div className="grid gap-3">
           {invoices.map((inv) => {
             const st = derivedStatus(inv);
+            const overdue = invoiceOverdue(inv);
             return (
               <Link key={inv.id} to="/factures/$id" params={{ id: inv.id }}>
                 <Card>
@@ -88,7 +94,14 @@ function InvoicesPage() {
                       </p>
                       <p className="text-sm text-muted-foreground">{formatDate(inv.date)}</p>
                     </div>
-                    <Badge tone={statusTone[st]}>{t(statusKey[st] as never)}</Badge>
+                    <div className="flex flex-wrap justify-end gap-2">
+                      <Badge tone={statusTone[st]}>{t(statusKey[st] as never)}</Badge>
+                      {overdue.late && (
+                        <Badge tone="danger">
+                          {t("inv_late")} · {overdue.days} {t("days_late")}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                   <dl className="mt-3 grid grid-cols-3 gap-2 text-xs">
                     <div>
