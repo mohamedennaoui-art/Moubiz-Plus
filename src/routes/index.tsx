@@ -212,6 +212,14 @@ function Dashboard() {
               <dt className="text-muted-foreground">{t("total_remaining")}</dt>
               <dd className="text-lg font-bold">{formatMoney(totalRemaining)}</dd>
             </div>
+            <div>
+              <dt className="text-muted-foreground">{t("unpaid_invoices")}</dt>
+              <dd className="text-lg font-bold">{summary.unpaidCount}</dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">{t("to_collect")}</dt>
+              <dd className="text-lg font-bold">{formatMoney(summary.toCollect)}</dd>
+            </div>
           </dl>
           <Link to="/factures/nouvelle" className="mt-4 block">
             <Button className="w-full">{t("btn_new_invoice")}</Button>
