@@ -62,19 +62,18 @@ function Dashboard() {
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
               {t("annual_turnover")}
             </p>
-            <Field label="">
-              <Select
-                value={ceilingYear}
-                onChange={(e) => setCeilingYear(Number(e.target.value))}
-                className="py-1 text-xs"
-              >
-                {ceilingYears.map((y) => (
-                  <option key={y} value={y}>
-                    {y}
-                  </option>
-                ))}
-              </Select>
-            </Field>
+            <Select
+              aria-label={t("year")}
+              value={ceilingYear}
+              onChange={(e) => setCeilingYear(Number(e.target.value))}
+              className="h-9 w-24 text-xs"
+            >
+              {ceilingYears.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </Select>
           </div>
           <p className="mt-2 text-2xl font-extrabold tracking-tight">
             {formatMoney(ceiling.turnover)} / {formatMoney(ceiling.ceiling)}
