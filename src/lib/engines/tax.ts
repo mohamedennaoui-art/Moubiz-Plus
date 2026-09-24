@@ -85,11 +85,24 @@ export function computeTaxDetails(
 ): TaxComputation {
   const amounts = computeTaxAmount(inputs.locationType, inputs.taxPeriod, ruleset);
   const ceiling = checkCeiling(inputs.turnover, ruleset);
+  const year = Number(inputs.period) || new Date().getFullYear();
+  const reg = inputs.registrationDate ?? "";
+  // The quarter checked for an annual period is T4: if T4 is exempt, the whole
+  // year is inside the exemption window.
+  const quarterKey = (isQuarter(inputs.taxPeriod)
+    ? inputs.taxPeriod.replace("Q", "T")
+    : "T4") as QuarterKey;
+  const exemptEnd = reg ? exemptionEnd(reg) : null;
+  const paymentExempt = reg ? isPaymentExempt(year, quarterKey, reg) : false;
   return {
     locationType: inputs.locationType,
     period: inputs.taxPeriod,
     turnover: inputs.turnover,
     ...amounts,
+    theoreticalTax: amounts.calculatedTax,
+    calculatedTax: paymentExempt ? 0 : amounts.calculatedTax,
+    paymentExempt,
+    exemptionEndDate: exemptEnd ? exemptEnd.toISOString() : null,
     ceilingStatus: ceiling.status,
     ceilingWarning: ceiling.warning,
     rulesVersion: ruleset.version,
