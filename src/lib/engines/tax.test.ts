@@ -64,3 +64,54 @@ describe("tax engine (rules 2026)", () => {
     expect(computeTaxDetails(base({})).rulesVersion).toBe("2026");
   });
 });
+
+describe("exemption period (registration 01/01/2026)", () => {
+  const reg = "2026-01-01";
+
+  it("TEST 1: municipal / T3 2026 → 0 TND due", () => {
+    const r = computeTaxDetails(base({ registrationDate: reg, period: "2026", taxPeriod: "Q3" }));
+    expect(r.paymentExempt).toBe(true);
+    expect(r.calculatedTax).toBe(0);
+    expect(r.theoreticalTax).toBe(50);
+  });
+
+  it("TEST 2: municipal / T1 2027 → 0 TND due", () => {
+    const r = computeTaxDetails(base({ registrationDate: reg, period: "2027", taxPeriod: "Q1" }));
+    expect(r.calculatedTax).toBe(0);
+  });
+
+  it("TEST 3: municipal / T2 2027 → 50 TND due", () => {
+    const r = computeTaxDetails(base({ registrationDate: reg, period: "2027", taxPeriod: "Q2" }));
+    expect(r.paymentExempt).toBe(false);
+    expect(r.calculatedTax).toBe(50);
+  });
+
+  it("TEST 4: outside / T3 2026 → 0 TND due", () => {
+    const r = computeTaxDetails(
+      base({
+        registrationDate: reg,
+        locationType: "OUTSIDE_MUNICIPAL",
+        period: "2026",
+        taxPeriod: "Q3",
+      }),
+    );
+    expect(r.calculatedTax).toBe(0);
+  });
+
+  it("TEST 5: outside / T2 2027 → 25 TND due", () => {
+    const r = computeTaxDetails(
+      base({
+        registrationDate: reg,
+        locationType: "OUTSIDE_MUNICIPAL",
+        period: "2027",
+        taxPeriod: "Q2",
+      }),
+    );
+    expect(r.calculatedTax).toBe(25);
+  });
+
+  it("exemption ends 31/03/2027", () => {
+    const r = computeTaxDetails(base({ registrationDate: reg }));
+    expect(r.exemptionEndDate?.slice(0, 10)).toBe("2027-03-31");
+  });
+});
