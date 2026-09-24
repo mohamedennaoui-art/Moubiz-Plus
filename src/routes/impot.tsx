@@ -119,8 +119,17 @@ function TaxPage() {
               <p className="mt-2 text-4xl font-extrabold tracking-tight">
                 {record.result.amount != null ? formatMoney(record.result.amount) : "— TND"}
               </p>
+              {exempt && (
+                <p className="mt-3 inline-block rounded-full border border-border px-3 py-1 text-xs font-bold">
+                  Exonéré — période d'exonération
+                  {details?.exemptionEndDate
+                    ? ` · jusqu'au ${new Date(details.exemptionEndDate).toLocaleDateString("fr-FR")}`
+                    : ""}
+                </p>
+              )}
               <p className="mt-2 text-sm text-muted-foreground">{record.result.explanation}</p>
             </Card>
+
 
             {ceilingWarning && (
               <Card>
