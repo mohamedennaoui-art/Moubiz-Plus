@@ -1,4 +1,5 @@
 import type { EngineResult, TaxInputs, TaxPeriod } from "./types";
+import { exemptionEnd, isPaymentExempt, type QuarterKey } from "./deadline-engine";
 
 /**
  * Tax calculation engine — Moubiz Plus V26 validated rules.
@@ -54,7 +55,12 @@ export type TaxComputation = {
   turnover: number;
   annualTax: number;
   quarterlyTax: number;
+  /** Theoretical amount from the ruleset, before any exemption. */
+  theoreticalTax: number;
+  /** Amount actually due (0 during the exemption period). */
   calculatedTax: number;
+  paymentExempt: boolean;
+  exemptionEndDate: string | null;
   ceilingStatus: CeilingStatus;
   ceilingWarning: string | null;
   rulesVersion: string;
@@ -80,11 +86,24 @@ export function computeTaxDetails(
 ): TaxComputation {
   const amounts = computeTaxAmount(inputs.locationType, inputs.taxPeriod, ruleset);
   const ceiling = checkCeiling(inputs.turnover, ruleset);
+  const year = Number(inputs.period) || new Date().getFullYear();
+  const reg = inputs.registrationDate ?? "";
+  // The quarter checked for an annual period is T4: if T4 is exempt, the whole
+  // year is inside the exemption window.
+  const quarterKey = (isQuarter(inputs.taxPeriod)
+    ? inputs.taxPeriod.replace("Q", "T")
+    : "T4") as QuarterKey;
+  const exemptEnd = reg ? exemptionEnd(reg) : null;
+  const paymentExempt = reg ? isPaymentExempt(year, quarterKey, reg) : false;
   return {
     locationType: inputs.locationType,
     period: inputs.taxPeriod,
     turnover: inputs.turnover,
     ...amounts,
+    theoreticalTax: amounts.calculatedTax,
+    calculatedTax: paymentExempt ? 0 : amounts.calculatedTax,
+    paymentExempt,
+    exemptionEndDate: exemptEnd ? exemptEnd.toISOString() : null,
     ceilingStatus: ceiling.status,
     ceilingWarning: ceiling.warning,
     rulesVersion: ruleset.version,
@@ -116,9 +135,23 @@ export function computeTax(inputs: TaxInputs, ruleset: TaxRuleset = taxRuleset):
         label: "Plafond 75 000 TND",
         value: d.ceilingStatus === "within" ? "Dans le plafond" : "Dépassé",
       },
+      {
+        label: "Paiement",
+        value: d.paymentExempt ? "Exonéré — période d'exonération" : "Exigible",
+      },
+      { label: "Déclaration", value: "À effectuer" },
+      ...(d.paymentExempt
+        ? [
+            {
+              label: "Montant théorique",
+              value: `${d.theoreticalTax.toLocaleString("fr-FR")} TND`,
+            },
+          ]
+        : []),
     ],
-    explanation:
-      "Le montant de l'impôt est déterminé selon la localisation de l'activité. Le plafond de chiffre d'affaires est vérifié séparément.",
+    explanation: d.paymentExempt
+      ? "Vous êtes dans la période d'exonération calculée depuis votre date d'inscription : le montant exigible est de 0 TND. La déclaration reste à effectuer."
+      : "Le montant de l'impôt est déterminé selon la localisation de l'activité. Le plafond de chiffre d'affaires est vérifié séparément.",
     rulesLoaded: true,
     details: d,
   };

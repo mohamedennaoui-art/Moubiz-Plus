@@ -45,6 +45,7 @@ function TaxPage() {
       locationType,
       turnover: Number(turnover) || 0,
       activity,
+      registrationDate: data.profile.registrationDate,
     };
     const result = computeTax(inputs);
     update({ tax: { inputs, result, calculatedAt: new Date().toISOString() } });
@@ -52,9 +53,16 @@ function TaxPage() {
   };
 
   const record = data.tax;
-  const ceilingWarning = record
-    ? (record.result.details as { ceilingWarning?: string | null } | undefined)?.ceilingWarning
-    : null;
+  const details = record?.result.details as
+    | {
+        ceilingWarning?: string | null;
+        paymentExempt?: boolean;
+        exemptionEndDate?: string | null;
+        theoreticalTax?: number;
+      }
+    | undefined;
+  const ceilingWarning = details?.ceilingWarning ?? null;
+  const exempt = Boolean(details?.paymentExempt);
 
   return (
     <AppShell>
@@ -111,8 +119,17 @@ function TaxPage() {
               <p className="mt-2 text-4xl font-extrabold tracking-tight">
                 {record.result.amount != null ? formatMoney(record.result.amount) : "— TND"}
               </p>
+              {exempt && (
+                <p className="mt-3 inline-block rounded-full border border-border px-3 py-1 text-xs font-bold">
+                  Exonéré — période d'exonération
+                  {details?.exemptionEndDate
+                    ? ` · jusqu'au ${new Date(details.exemptionEndDate).toLocaleDateString("fr-FR")}`
+                    : ""}
+                </p>
+              )}
               <p className="mt-2 text-sm text-muted-foreground">{record.result.explanation}</p>
             </Card>
+
 
             {ceilingWarning && (
               <Card>
