@@ -115,3 +115,22 @@ describe("exemption period (registration 01/01/2026)", () => {
     expect(r.exemptionEndDate?.slice(0, 10)).toBe("2027-03-31");
   });
 });
+
+describe("bug report — registration 01/01/2026 & 20/09/2026", () => {
+  const run = (loc: "MUNICIPAL" | "OUTSIDE_MUNICIPAL", y: string, q: "Q1"|"Q2"|"Q3"|"Q4", reg: string) =>
+    computeTaxDetails({ period: y, taxPeriod: q, locationType: loc, turnover: 1000, activity: "services", registrationDate: reg });
+  it("T1-T6", () => {
+    const cases: [any, string, any, string, number, number, boolean][] = [
+      ["MUNICIPAL","2026","Q3","2026-01-01",50,0,true],
+      ["MUNICIPAL","2027","Q1","2026-01-01",50,0,true],
+      ["MUNICIPAL","2027","Q2","2026-01-01",50,50,false],
+      ["OUTSIDE_MUNICIPAL","2026","Q3","2026-01-01",25,0,true],
+      ["OUTSIDE_MUNICIPAL","2027","Q2","2026-01-01",25,25,false],
+      ["MUNICIPAL","2026","Q4","2026-09-20",50,0,true],
+    ];
+    for (const [l,y,q,r,th,due,ex] of cases) {
+      const d = run(l,y,q,r);
+      expect([d.theoreticalTax,d.calculatedTax,d.paymentExempt]).toEqual([th,due,ex]);
+    }
+  });
+});
