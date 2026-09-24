@@ -52,7 +52,17 @@ function TaxPage() {
     setShowResult(true);
   };
 
-  const record = data.tax;
+  // Always recompute from saved inputs + current registration date so the
+  // amount due reflects the exemption (never show a stale stored amount).
+  const record = data.tax
+    ? {
+        ...data.tax,
+        result: computeTax({
+          ...data.tax.inputs,
+          registrationDate: data.profile.registrationDate,
+        }),
+      }
+    : undefined;
   const details = record?.result.details as
     | {
         ceilingWarning?: string | null;
@@ -119,6 +129,12 @@ function TaxPage() {
               <p className="mt-2 text-4xl font-extrabold tracking-tight">
                 {record.result.amount != null ? formatMoney(record.result.amount) : "— TND"}
               </p>
+              {details?.theoreticalTax != null && (
+                <p className="mt-2 text-sm font-semibold">
+                  Montant théorique : {formatMoney(details.theoreticalTax)} · Montant exigible :{" "}
+                  {formatMoney(record.result.amount ?? 0)}
+                </p>
+              )}
               {exempt && (
                 <p className="mt-3 inline-block rounded-full border border-border px-3 py-1 text-xs font-bold">
                   Exonéré — période d'exonération

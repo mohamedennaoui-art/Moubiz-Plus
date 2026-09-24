@@ -1,3 +1,4 @@
+import { computeTax } from "@/lib/engines/tax";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
@@ -106,8 +107,13 @@ function Dashboard() {
             {t("card_tax")}
           </p>
           <p className="mt-2 text-3xl font-extrabold tracking-tight">
-            {data.tax?.result.amount != null
-              ? formatMoney(data.tax.result.amount)
+            {data.tax
+              ? formatMoney(
+                  computeTax({
+                    ...data.tax.inputs,
+                    registrationDate: data.profile.registrationDate,
+                  }).amount ?? 0,
+                )
               : t("not_calculated")}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
