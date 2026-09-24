@@ -53,9 +53,16 @@ function TaxPage() {
   };
 
   const record = data.tax;
-  const ceilingWarning = record
-    ? (record.result.details as { ceilingWarning?: string | null } | undefined)?.ceilingWarning
-    : null;
+  const details = record?.result.details as
+    | {
+        ceilingWarning?: string | null;
+        paymentExempt?: boolean;
+        exemptionEndDate?: string | null;
+        theoreticalTax?: number;
+      }
+    | undefined;
+  const ceilingWarning = details?.ceilingWarning ?? null;
+  const exempt = Boolean(details?.paymentExempt);
 
   return (
     <AppShell>
