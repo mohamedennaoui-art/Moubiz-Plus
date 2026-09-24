@@ -25,6 +25,8 @@ export type TaxInputs = {
   locationType: LocationType;
   turnover: number;
   activity: ActivityType;
+  /** ISO registration date; drives the payment exemption period. */
+  registrationDate?: string;
 };
 
 export type EngineResult = {
