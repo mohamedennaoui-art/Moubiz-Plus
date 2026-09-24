@@ -1,4 +1,5 @@
 import type { EngineResult, TaxInputs, TaxPeriod } from "./types";
+import { exemptionEnd, isPaymentExempt, type QuarterKey } from "./deadline-engine";
 
 /**
  * Tax calculation engine — Moubiz Plus V26 validated rules.
