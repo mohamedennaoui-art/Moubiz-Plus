@@ -45,6 +45,7 @@ function TaxPage() {
       locationType,
       turnover: Number(turnover) || 0,
       activity,
+      registrationDate: data.profile.registrationDate,
     };
     const result = computeTax(inputs);
     update({ tax: { inputs, result, calculatedAt: new Date().toISOString() } });
