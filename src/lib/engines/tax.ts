@@ -54,7 +54,12 @@ export type TaxComputation = {
   turnover: number;
   annualTax: number;
   quarterlyTax: number;
+  /** Theoretical amount from the ruleset, before any exemption. */
+  theoreticalTax: number;
+  /** Amount actually due (0 during the exemption period). */
   calculatedTax: number;
+  paymentExempt: boolean;
+  exemptionEndDate: string | null;
   ceilingStatus: CeilingStatus;
   ceilingWarning: string | null;
   rulesVersion: string;
