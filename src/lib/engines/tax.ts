@@ -135,9 +135,23 @@ export function computeTax(inputs: TaxInputs, ruleset: TaxRuleset = taxRuleset):
         label: "Plafond 75 000 TND",
         value: d.ceilingStatus === "within" ? "Dans le plafond" : "Dépassé",
       },
+      {
+        label: "Paiement",
+        value: d.paymentExempt ? "Exonéré — période d'exonération" : "Exigible",
+      },
+      { label: "Déclaration", value: "À effectuer" },
+      ...(d.paymentExempt
+        ? [
+            {
+              label: "Montant théorique",
+              value: `${d.theoreticalTax.toLocaleString("fr-FR")} TND`,
+            },
+          ]
+        : []),
     ],
-    explanation:
-      "Le montant de l'impôt est déterminé selon la localisation de l'activité. Le plafond de chiffre d'affaires est vérifié séparément.",
+    explanation: d.paymentExempt
+      ? "Vous êtes dans la période d'exonération calculée depuis votre date d'inscription : le montant exigible est de 0 TND. La déclaration reste à effectuer."
+      : "Le montant de l'impôt est déterminé selon la localisation de l'activité. Le plafond de chiffre d'affaires est vérifié séparément.",
     rulesLoaded: true,
     details: d,
   };
