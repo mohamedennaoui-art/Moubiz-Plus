@@ -33,6 +33,9 @@ function Dashboard() {
   const { t } = useI18n();
   const { data } = useStore();
   const [ceilingYear, setCeilingYear] = useState(new Date().getFullYear());
+  const social = data.social
+    ? computeSocialDetails(normalizeSocialInputs(data.social.inputs, data.profile))
+    : null;
   const next = data.profile.registrationDate
     ? nextObligation(
         buildYear(new Date().getFullYear(), data.profile.registrationDate, data.quarterEntries),
