@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -107,6 +108,43 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+const META_PIXEL_ID = "1768283614419879";
+
+// Official Meta Pixel base code, initialized exactly once per page load.
+// Fires a standard PageView on initial load and on every client-side
+// navigation so all routes are tracked.
+function MetaPixel() {
+  const pathname = useRouterState({
+    select: (s) => s.resolvedLocation?.pathname ?? s.location.pathname,
+  });
+
+  useEffect(() => {
+    const w = window as any;
+    if (!w.fbq) {
+      const n: any = (w.fbq = function (...args: unknown[]) {
+        if (n.callMethod) {
+          n.callMethod.apply(n, args);
+        } else {
+          n.queue.push(args);
+        }
+      });
+      if (!w._fbq) w._fbq = n;
+      n.push = n;
+      n.loaded = true;
+      n.version = "2.0";
+      n.queue = [];
+      const script = document.createElement("script");
+      script.async = true;
+      script.src = "https://connect.facebook.net/en_US/fbevents.js";
+      document.head.appendChild(script);
+      n("init", META_PIXEL_ID);
+    }
+    w.fbq("track", "PageView");
+  }, [pathname]);
+
+  return null;
+}
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
@@ -115,6 +153,15 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body>
         {children}
+        <noscript>
+          <img
+            height="1"
+            width="1"
+            style={{ display: "none" }}
+            alt=""
+            src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
+          />
+        </noscript>
         <Scripts />
       </body>
     </html>
@@ -128,6 +175,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
         <StoreProvider>
+          <MetaPixel />
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
         </StoreProvider>
