@@ -40,10 +40,20 @@ export type EngineResult = {
 
 export type TaxRecord = { inputs: TaxInputs; result: EngineResult; calculatedAt: string };
 
+export type SocialActivityCategory = "other" | "craft";
+export type SocialEmployment = "independent" | "private_employee";
+
 export type SocialInputs = {
+  /** Year, e.g. "2026". */
   period: string;
-  situation: SocialSituation;
-  turnover: number;
+  quarter?: "T1" | "T2" | "T3" | "T4";
+  activityCategory: SocialActivityCategory;
+  /** 1..10, ignored for crafts. */
+  tranche: number;
+  employment: SocialEmployment;
+  registrationDate?: string;
+  /** Legacy field kept for stored data compatibility. */
+  situation?: SocialSituation;
 };
 
 export type SocialRecord = { inputs: SocialInputs; result: EngineResult; calculatedAt: string };
