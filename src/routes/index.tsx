@@ -33,6 +33,9 @@ function Dashboard() {
   const { t } = useI18n();
   const { data } = useStore();
   const [ceilingYear, setCeilingYear] = useState(new Date().getFullYear());
+  const social = data.social
+    ? computeSocialDetails(normalizeSocialInputs(data.social.inputs, data.profile))
+    : null;
   const next = data.profile.registrationDate
     ? nextObligation(
         buildYear(new Date().getFullYear(), data.profile.registrationDate, data.quarterEntries),
@@ -130,29 +133,28 @@ function Dashboard() {
           <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
             {t("card_social")}
           </p>
-          <p className="mt-2 text-3xl font-extrabold tracking-tight">
-            {data.social?.result.amount != null
-              ? formatMoney(data.social.result.amount)
-              : t("not_calculated")}
-          </p>
-          <p className="mt-2">
-            <Badge
-              tone={
-                data.social?.result.applicable === "yes"
-                  ? "success"
-                  : data.social?.result.applicable === "no"
-                    ? "neutral"
-                    : "neutral"
-              }
-            >
-              {t("status")}:{" "}
-              {data.social?.result.applicable === "yes"
-                ? t("applicable")
-                : data.social?.result.applicable === "no"
-                  ? t("not_applicable")
-                  : t("undetermined")}
-            </Badge>
-          </p>
+          {social ? (
+            <>
+              <p className="mt-2 text-3xl font-extrabold tracking-tight">
+                {formatMoney(social.quarterly)}{" "}
+                <span className="text-sm font-semibold">/ {t("per_quarter")}</span>
+              </p>
+              <p className="mt-1 text-sm font-semibold">
+                {social.tranche ? `${t("tranche")} ${social.tranche}` : t("social_act_craft")}
+                {social.tranche ? ` · ${t("social_act_other")}` : ""}
+              </p>
+              <p className="text-sm font-semibold">
+                {formatMoney(social.annual)} / {t("per_year")}
+              </p>
+              <p className="mt-2">
+                <Badge tone={social.paymentExempt ? "neutral" : "success"}>
+                  {t("status")}: {social.paymentExempt ? t("social_exempt") : t("social_not_exempt")}
+                </Badge>
+              </p>
+            </>
+          ) : (
+            <p className="mt-2 text-3xl font-extrabold tracking-tight">{t("not_calculated")}</p>
+          )}
           <Link to="/contribution" className="mt-4 block">
             <Button className="w-full">{t("btn_calc_social")}</Button>
           </Link>
