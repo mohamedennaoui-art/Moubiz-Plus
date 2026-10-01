@@ -109,3 +109,18 @@ export function computeSocial(inputs: SocialInputs): EngineResult {
     details: d,
   };
 }
+
+/** Fill defaults for stored/legacy inputs so a calculation is always possible. */
+export function normalizeSocialInputs(
+  raw: Partial<SocialInputs> | undefined,
+  fallback: { activity?: string; registrationDate?: string } = {},
+): SocialInputs {
+  return {
+    period: raw?.period || String(new Date().getFullYear()),
+    quarter: raw?.quarter ?? (`T${Math.floor(new Date().getMonth() / 3) + 1}` as SocialInputs["quarter"]),
+    activityCategory: raw?.activityCategory ?? (fallback.activity === "craft" ? "craft" : "other"),
+    tranche: raw?.tranche ?? DEFAULT_TRANCHE,
+    employment: raw?.employment ?? "independent",
+    registrationDate: fallback.registrationDate || raw?.registrationDate || "",
+  };
+}
