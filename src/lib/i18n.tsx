@@ -80,7 +80,6 @@ export const dict: Dict = {
   sit_main: { fr: "Activité principale", ar: "نشاط رئيسي" },
   sit_secondary: { fr: "Activité secondaire", ar: "نشاط ثانوي" },
   sit_covered: { fr: "Déjà couvert par un autre régime", ar: "مغطّى بنظام آخر" },
-  quarter: { fr: "Trimestre", ar: "الثلاثي" },
   social_activity: { fr: "Activité", ar: "النشاط" },
   social_act_other: { fr: "Autres activités", ar: "أنشطة أخرى" },
   social_act_craft: { fr: "Artisanat et industries traditionnelles", ar: "الحرف والصناعات التقليدية" },
