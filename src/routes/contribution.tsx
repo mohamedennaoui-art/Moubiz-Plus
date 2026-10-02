@@ -82,7 +82,7 @@ function SocialPage() {
               <Select value={form.tranche} onChange={(e) => set({ tranche: Number(e.target.value) })}>
                 {Array.from({ length: trancheCount }, (_, i) => (
                   <option key={i} value={i + 1}>
-                    {t("tranche")} {i + 1}
+                    {t("tranche")} {i + 1} — {formatMoney(paramsFor(Number(form.period) || 2026).params.other[i]!)} / {t("per_quarter")}
                   </option>
                 ))}
               </Select>

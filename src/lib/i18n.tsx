@@ -83,7 +83,7 @@ export const dict: Dict = {
   social_activity: { fr: "Activité", ar: "النشاط" },
   social_act_other: { fr: "Autres activités", ar: "أنشطة أخرى" },
   social_act_craft: { fr: "Artisanat et industries traditionnelles", ar: "الحرف والصناعات التقليدية" },
-  social_tranche: { fr: "Tranche choisie", ar: "الشريحة المختارة" },
+  social_tranche: { fr: "TRANCHE CNSS", ar: "شريحة الصندوق الوطني للضمان الاجتماعي" },
   tranche: { fr: "Tranche", ar: "الشريحة" },
   sit_independent: { fr: "Auto-entrepreneur", ar: "مبادر ذاتي" },
   sit_private_employee: { fr: "Salarié secteur privé + auto-entrepreneur", ar: "أجير بالقطاع الخاص + مبادر ذاتي" },
