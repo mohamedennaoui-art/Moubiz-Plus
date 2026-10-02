@@ -1,6 +1,7 @@
 import { computeTax } from "@/lib/engines/tax";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { computeSocialDetails, normalizeSocialInputs } from "@/lib/engines/social";
 import { AppShell } from "@/components/AppShell";
 import { Badge, Button, Card, Select } from "@/components/ui-kit";
 import { formatDate, formatMoney, useI18n } from "@/lib/i18n";

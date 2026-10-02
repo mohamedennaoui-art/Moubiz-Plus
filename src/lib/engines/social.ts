@@ -117,7 +117,7 @@ export function normalizeSocialInputs(
 ): SocialInputs {
   return {
     period: raw?.period || String(new Date().getFullYear()),
-    quarter: raw?.quarter ?? (`T${Math.floor(new Date().getMonth() / 3) + 1}` as SocialInputs["quarter"]),
+    quarter: raw?.quarter ?? (`T${Math.floor(new Date().getMonth() / 3) + 1}` as "T1"),
     activityCategory: raw?.activityCategory ?? (fallback.activity === "craft" ? "craft" : "other"),
     tranche: raw?.tranche ?? DEFAULT_TRANCHE,
     employment: raw?.employment ?? "independent",

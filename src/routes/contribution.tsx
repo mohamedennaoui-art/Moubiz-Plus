@@ -61,7 +61,7 @@ function SocialPage() {
               <Input value={form.period} onChange={(e) => set({ period: e.target.value })} placeholder="2026" />
             </Field>
             <Field label={t("quarter")}>
-              <Select value={form.quarter} onChange={(e) => set({ quarter: e.target.value as SocialInputs["quarter"] })}>
+              <Select value={form.quarter} onChange={(e) => set({ quarter: e.target.value as "T1" })}>
                 {(["T1", "T2", "T3", "T4"] as const).map((q) => (
                   <option key={q} value={q}>{q}</option>
                 ))}
