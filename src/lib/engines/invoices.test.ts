@@ -17,9 +17,23 @@ const base: Invoice = {
 const rates = { TND: 1, EUR: 0, USD: 0 };
 
 describe("invoice payment tracking", () => {
-  it("unpaid when finalized and nothing paid", () => {
-    expect(derivedStatus(base)).toBe("unpaid");
+  it("keeps workflow status when nothing paid", () => {
+    expect(derivedStatus(base)).toBe("sent");
+    expect(derivedStatus({ ...base, status: "unpaid" })).toBe("unpaid");
+    expect(derivedStatus({ ...base, status: "draft" })).toBe("draft");
     expect(invoiceRemaining(base)).toBe(1000);
+  });
+  it("F-2026-001: 5000 paid on 20000 total → partial, 15000 remaining", () => {
+    const inv: Invoice = {
+      ...base,
+      number: "F-2026-001",
+      items: [{ id: "l1", description: "x", quantity: 1, unitPrice: 20000 }],
+      paid: 5000,
+    };
+    expect(derivedStatus(inv)).toBe("partial");
+    expect(invoiceRemaining(inv)).toBe(15000);
+    expect(derivedStatus({ ...inv, paid: 20000 })).toBe("paid");
+    expect(invoiceRemaining({ ...inv, paid: 20000 })).toBe(0);
   });
   it("partially paid", () => {
     const inv = { ...base, paid: 400 };

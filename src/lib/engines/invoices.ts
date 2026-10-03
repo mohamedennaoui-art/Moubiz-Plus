@@ -15,7 +15,8 @@ export function derivedStatus(inv: Invoice): InvoiceStatus {
   const paid = inv.paid || 0;
   if (total > 0 && paid >= total) return "paid";
   if (paid > 0) return "partial";
-  return "unpaid";
+  // Nothing paid: keep the workflow status (sent/unpaid) as-is.
+  return inv.status;
 }
 
 /** Overdue tracking: due date passed and something is still owed. */
