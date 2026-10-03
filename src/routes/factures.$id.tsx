@@ -44,9 +44,10 @@ const statusKey: Record<InvoiceStatus, string> = {
 function InvoiceDetail() {
   const { id } = useParams({ from: "/factures/$id" });
   const { t } = useI18n();
-  const { data, update } = useStore();
+  const { data, update, ready } = useStore();
   const invoice = data.invoices.find((i) => i.id === id);
 
+  if (!ready) return <AppShell>{null}</AppShell>;
   if (!invoice) {
     return (
       <AppShell>
