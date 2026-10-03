@@ -85,6 +85,11 @@ function InvoiceDetail() {
               {t("inv_late")} · {overdue.days} {t("days_late")}
             </Badge>
           )}
+          {invoice.status === "draft" && (
+            <Link to="/factures/$id/modifier" params={{ id: invoice.id }}>
+              <Button variant="outline">{t("edit_invoice")}</Button>
+            </Link>
+          )}
           <Button onClick={() => window.print()}>{t("download_pdf")}</Button>
           <Link to="/factures">
             <Button variant="outline">{t("invoice_history")}</Button>

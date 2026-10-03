@@ -17,6 +17,7 @@ import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as FacturesIndexRouteImport } from './routes/factures.index'
 import { Route as FacturesIdRouteImport } from './routes/factures.$id'
 import { Route as FacturesNouvelleRouteImport } from './routes/factures.nouvelle'
+import { Route as FacturesIdModifierRouteImport } from './routes/factures_.$id.modifier'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +59,11 @@ const FacturesNouvelleRoute = FacturesNouvelleRouteImport.update({
   path: '/factures/nouvelle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FacturesIdModifierRoute = FacturesIdModifierRouteImport.update({
+  id: '/factures_/$id/modifier',
+  path: '/factures/$id/modifier',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/factures/$id': typeof FacturesIdRoute
   '/factures/nouvelle': typeof FacturesNouvelleRoute
   '/factures/': typeof FacturesIndexRoute
+  '/factures/$id/modifier': typeof FacturesIdModifierRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/factures/$id': typeof FacturesIdRoute
   '/factures/nouvelle': typeof FacturesNouvelleRoute
   '/factures': typeof FacturesIndexRoute
+  '/factures/$id/modifier': typeof FacturesIdModifierRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/factures/$id': typeof FacturesIdRoute
   '/factures/nouvelle': typeof FacturesNouvelleRoute
   '/factures/': typeof FacturesIndexRoute
+  '/factures_/$id/modifier': typeof FacturesIdModifierRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/factures/$id'
     | '/factures/nouvelle'
     | '/factures/'
+    | '/factures/$id/modifier'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/factures/$id'
     | '/factures/nouvelle'
     | '/factures'
+    | '/factures/$id/modifier'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/factures/$id'
     | '/factures/nouvelle'
     | '/factures/'
+    | '/factures_/$id/modifier'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   FacturesIdRoute: typeof FacturesIdRoute
   FacturesNouvelleRoute: typeof FacturesNouvelleRoute
   FacturesIndexRoute: typeof FacturesIndexRoute
+  FacturesIdModifierRoute: typeof FacturesIdModifierRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FacturesNouvelleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/factures_/$id/modifier': {
+      id: '/factures_/$id/modifier'
+      path: '/factures/$id/modifier'
+      fullPath: '/factures/$id/modifier'
+      preLoaderRoute: typeof FacturesIdModifierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   FacturesIdRoute: FacturesIdRoute,
   FacturesNouvelleRoute: FacturesNouvelleRoute,
   FacturesIndexRoute: FacturesIndexRoute,
+  FacturesIdModifierRoute: FacturesIdModifierRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
