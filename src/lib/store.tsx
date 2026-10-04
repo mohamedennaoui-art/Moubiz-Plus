@@ -7,6 +7,7 @@ import type {
   TaxRecord,
 } from "./engines/types";
 import type { QuarterEntry } from "./engines/deadline-engine";
+import { syncInvoiceStatus } from "./engines/invoices";
 
 type AppData = {
   profile: Profile;
@@ -101,6 +102,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     } catch {
       /* ignore corrupt storage */
     }
+    const synced = (next.invoices ?? []).map(syncInvoiceStatus);
+    if (synced.some((inv, i) => inv !== next.invoices[i])) {
+      next = { ...next, invoices: synced };
+      try {
+        window.localStorage.setItem(KEY, JSON.stringify(next));
+      } catch {
+        /* storage unavailable */
+      }
+    }
     setData(next);
     setReady(true);
   }, []);
@@ -112,6 +122,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       update: (patch) =>
         setData((prev) => {
           const next = { ...prev, ...patch };
+          if (patch.invoices) next.invoices = patch.invoices.map(syncInvoiceStatus);
           try {
             window.localStorage.setItem(KEY, JSON.stringify(next));
           } catch {
