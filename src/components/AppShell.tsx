@@ -17,15 +17,15 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <div className="min-h-dvh bg-background">
+    <div className="min-h-dvh bg-muted">
       <header className="no-print sticky top-0 z-30 border-b border-border bg-background">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-4 py-3">
           <Link to="/" className="flex items-center gap-2">
-            <span className="grid size-9 place-items-center rounded-xl bg-primary text-sm font-extrabold text-primary-foreground">
-              M+
+            <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-sm font-extrabold text-primary-foreground">
+              M<span className="text-teal">+</span>
             </span>
             <span className="leading-tight">
-              <span className="block text-sm font-bold text-foreground">{t("appName")}</span>
+              <span className="block text-sm font-bold text-primary">{t("appName")}</span>
               <span className="block text-[11px] text-muted-foreground">{t("tagline")}</span>
             </span>
           </Link>
@@ -61,7 +61,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 to={item.to}
                 className={cn(
                   "flex flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-[10px] font-semibold",
-                  active ? "bg-secondary text-primary" : "text-muted-foreground",
+                  active ? "bg-accent text-primary shadow-[inset_0_2px_0_var(--teal)]" : "text-muted-foreground hover:text-primary",
                 )}
               >
                 <span className="text-base leading-none">{item.icon}</span>

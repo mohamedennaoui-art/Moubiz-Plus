@@ -4,7 +4,7 @@
 
 /*
  * Moubiz Plus design system — clean light mode.
- * Pure white surfaces, near-black text, high-contrast semantic accents.
+ * Logo identity: navy primary, turquoise accent, white cards on light-gray page.
  * All colors are oklch tokens. Never hardcode colors in components.
  */
 
@@ -37,6 +37,8 @@
   --color-warning-foreground: var(--warning-foreground);
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
+  --color-teal: var(--teal);
+  --color-teal-foreground: var(--teal-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -45,32 +47,34 @@
 }
 
 :root {
-  --radius: 0.875rem;
+  --radius: 0.625rem;
   --background: oklch(1 0 0);
-  --foreground: oklch(0.15 0.01 250);
+  --foreground: oklch(0.24 0.02 255);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.01 250);
+  --card-foreground: oklch(0.24 0.02 255);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.01 250);
-  --primary: oklch(0.48 0.16 250);
+  --popover-foreground: oklch(0.24 0.02 255);
+  --primary: oklch(0.33 0.1 258);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.97 0.004 250);
-  --secondary-foreground: oklch(0.15 0.01 250);
-  --muted: oklch(0.975 0.003 250);
-  --muted-foreground: oklch(0.42 0.015 250);
-  --accent: oklch(0.955 0.02 250);
-  --accent-foreground: oklch(0.25 0.08 250);
-  --destructive: oklch(0.51 0.21 27);
+  --secondary: oklch(0.968 0.005 240);
+  --secondary-foreground: oklch(0.24 0.02 255);
+  --muted: oklch(0.975 0.004 240);
+  --muted-foreground: oklch(0.47 0.02 255);
+  --accent: oklch(0.95 0.035 195);
+  --accent-foreground: oklch(0.42 0.09 195);
+  --teal: oklch(0.7 0.12 192);
+  --teal-foreground: oklch(1 0 0);
+  --destructive: oklch(0.53 0.2 27);
   --destructive-foreground: oklch(1 0 0);
-  --success: oklch(0.48 0.14 157);
+  --success: oklch(0.52 0.13 155);
   --success-foreground: oklch(1 0 0);
-  --warning: oklch(0.55 0.14 65);
+  --warning: oklch(0.6 0.15 58);
   --warning-foreground: oklch(1 0 0);
-  --info: oklch(0.48 0.16 250);
+  --info: oklch(0.45 0.13 250);
   --info-foreground: oklch(1 0 0);
-  --border: oklch(0.9 0.008 250);
-  --input: oklch(0.86 0.01 250);
-  --ring: oklch(0.48 0.16 250);
+  --border: oklch(0.925 0.006 240);
+  --input: oklch(0.88 0.01 240);
+  --ring: oklch(0.7 0.12 192);
 }
 
 @layer base {
