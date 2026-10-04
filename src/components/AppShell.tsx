@@ -21,7 +21,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="no-print sticky top-0 z-30 border-b border-border bg-background">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-4 py-3">
           <Link to="/" className="flex items-center gap-2">
-            <span className="grid size-9 place-items-center rounded-xl bg-primary text-sm font-extrabold text-primary-foreground">
+            <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-sm font-extrabold text-primary-foreground">
               M<span className="text-teal">+</span>
             </span>
             <span className="leading-tight">
