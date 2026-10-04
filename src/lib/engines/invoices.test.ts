@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { derivedStatus, invoiceOverdue, invoiceRemaining, paymentSummary } from "./invoices";
+import {
+  derivedStatus,
+  invoiceOverdue,
+  invoiceRemaining,
+  paymentSummary,
+  syncInvoiceStatus,
+} from "./invoices";
 import type { Invoice } from "./types";
 
 const base: Invoice = {
@@ -57,5 +63,13 @@ describe("invoice payment tracking", () => {
   it("dashboard summary ignores drafts", () => {
     const list = [base, { ...base, id: "i2", status: "draft" as const }];
     expect(paymentSummary(list, rates)).toEqual({ unpaidCount: 1, toCollect: 1000 });
+  });
+  it("F-2026-002: draft, 200 paid on 1000 total → partial saved, 800 remaining", () => {
+    const draft: Invoice = { ...base, number: "F-2026-002", status: "draft", paid: 200 };
+    const saved = syncInvoiceStatus(draft);
+    expect(saved.status).toBe("partial");
+    expect(invoiceRemaining(saved)).toBe(800);
+    expect(syncInvoiceStatus({ ...draft, paid: 1000 }).status).toBe("paid");
+    expect(syncInvoiceStatus({ ...draft, paid: 0 }).status).toBe("draft");
   });
 });
