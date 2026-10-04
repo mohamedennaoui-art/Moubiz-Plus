@@ -10,12 +10,11 @@ export const invoiceRemaining = (inv: Invoice) =>
   Math.max(invoiceTotal(inv) - (inv.paid || 0), 0);
 
 export function derivedStatus(inv: Invoice): InvoiceStatus {
-  if (inv.status === "draft") return "draft";
   const total = invoiceTotal(inv);
   const paid = inv.paid || 0;
   if (total > 0 && paid >= total) return "paid";
   if (paid > 0) return "partial";
-  // Nothing paid: keep the workflow status (sent/unpaid) as-is.
+  // Nothing paid: keep the current workflow status (draft/sent/unpaid) as-is.
   return inv.status;
 }
 
@@ -58,3 +57,9 @@ export function nextInvoiceNumber(invoices: Invoice[]) {
   const n = invoices.length + 1;
   return `F-${year}-${String(n).padStart(3, "0")}`;
 }
+
+/** Persist the payment-derived status into the invoice data itself. */
+export const syncInvoiceStatus = (inv: Invoice): Invoice => {
+  const status = derivedStatus(inv);
+  return status === inv.status ? inv : { ...inv, status };
+};
