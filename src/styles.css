@@ -37,6 +37,7 @@
   --color-warning-foreground: var(--warning-foreground);
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
+  --color-page: var(--page);
   --color-teal: var(--teal);
   --color-teal-foreground: var(--teal-foreground);
   --color-border: var(--border);
@@ -48,6 +49,7 @@
 
 :root {
   --radius: 0.625rem;
+  --page: oklch(0.93 0.026 240);
   --background: oklch(1 0 0);
   --foreground: oklch(0.24 0.02 255);
   --card: oklch(1 0 0);

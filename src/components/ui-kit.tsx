@@ -7,9 +7,9 @@ export function Card({ children, className }: { children: ReactNode; className?:
 
 export function PageTitle({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
-    <div className="mb-5">
+    <div className="mb-7 border-b border-border/70 pb-4">
       <h1 className="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
-      {subtitle ? <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p> : null}
+      {subtitle ? <p className="mt-2 text-sm text-muted-foreground">{subtitle}</p> : null}
     </div>
   );
 }

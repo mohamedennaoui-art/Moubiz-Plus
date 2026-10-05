@@ -17,7 +17,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <div className="min-h-dvh bg-muted">
+    <div className="min-h-dvh bg-page">
       <header className="no-print sticky top-0 z-30 border-b border-border bg-background">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-4 py-3">
           <Link to="/" className="flex items-center gap-2">
@@ -51,7 +51,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="mx-auto w-full max-w-2xl px-4 pb-28 pt-5">{children}</main>
 
       <nav className="no-print fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background">
-        <div className="mx-auto grid max-w-2xl grid-cols-6 px-1 py-1.5">
+        <div className="mx-auto grid max-w-2xl grid-cols-6 gap-2 px-3 py-2.5">
           {items.map((item) => {
             const active =
               item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
@@ -60,7 +60,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 key={item.to}
                 to={item.to}
                 className={cn(
-                  "flex flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-[10px] font-semibold",
+                  "flex flex-col items-center gap-1.5 rounded-xl px-1.5 py-2.5 text-[10px] font-semibold",
                   active ? "bg-accent text-primary shadow-[inset_0_2px_0_var(--teal)]" : "text-muted-foreground hover:text-primary",
                 )}
               >
