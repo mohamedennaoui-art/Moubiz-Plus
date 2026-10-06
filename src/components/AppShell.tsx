@@ -2,6 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { AccountMenu } from "./AccountMenu";
 
 const items = [
   { to: "/", key: "nav_dashboard", icon: "▦" },
@@ -29,6 +30,8 @@ export function AppShell({ children }: { children: ReactNode }) {
               <span className="block text-[11px] text-muted-foreground">{t("tagline")}</span>
             </span>
           </Link>
+          <div className="flex items-center gap-2">
+          <AccountMenu />
           <div className="flex items-center gap-1 rounded-full border border-border p-1">
             {(["fr", "ar"] as const).map((l) => (
               <button
@@ -44,6 +47,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 {l === "fr" ? "FR" : "AR"}
               </button>
             ))}
+          </div>
           </div>
         </div>
       </header>

@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContributionRouteImport } from './routes/contribution'
 import { Route as EcheancesRouteImport } from './routes/echeances'
 import { Route as ImpotRouteImport } from './routes/impot'
@@ -17,11 +19,21 @@ import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as FacturesIndexRouteImport } from './routes/factures.index'
 import { Route as FacturesIdRouteImport } from './routes/factures.$id'
 import { Route as FacturesNouvelleRouteImport } from './routes/factures.nouvelle'
+import { Route as AuthenticatedAdminUtilisateursRouteImport } from './routes/_authenticated/admin.utilisateurs'
 import { Route as FacturesIdModifierRouteImport } from './routes/factures_.$id.modifier'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContributionRoute = ContributionRouteImport.update({
@@ -59,6 +71,12 @@ const FacturesNouvelleRoute = FacturesNouvelleRouteImport.update({
   path: '/factures/nouvelle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminUtilisateursRoute =
+  AuthenticatedAdminUtilisateursRouteImport.update({
+    id: '/admin/utilisateurs',
+    path: '/admin/utilisateurs',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const FacturesIdModifierRoute = FacturesIdModifierRouteImport.update({
   id: '/factures_/$id/modifier',
   path: '/factures/$id/modifier',
@@ -67,6 +85,7 @@ const FacturesIdModifierRoute = FacturesIdModifierRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/contribution': typeof ContributionRoute
   '/echeances': typeof EcheancesRoute
   '/impot': typeof ImpotRoute
@@ -74,10 +93,12 @@ export interface FileRoutesByFullPath {
   '/factures/$id': typeof FacturesIdRoute
   '/factures/nouvelle': typeof FacturesNouvelleRoute
   '/factures/': typeof FacturesIndexRoute
+  '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
   '/factures/$id/modifier': typeof FacturesIdModifierRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/contribution': typeof ContributionRoute
   '/echeances': typeof EcheancesRoute
   '/impot': typeof ImpotRoute
@@ -85,11 +106,14 @@ export interface FileRoutesByTo {
   '/factures/$id': typeof FacturesIdRoute
   '/factures/nouvelle': typeof FacturesNouvelleRoute
   '/factures': typeof FacturesIndexRoute
+  '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
   '/factures/$id/modifier': typeof FacturesIdModifierRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/contribution': typeof ContributionRoute
   '/echeances': typeof EcheancesRoute
   '/impot': typeof ImpotRoute
@@ -97,12 +121,14 @@ export interface FileRoutesById {
   '/factures/$id': typeof FacturesIdRoute
   '/factures/nouvelle': typeof FacturesNouvelleRoute
   '/factures/': typeof FacturesIndexRoute
+  '/_authenticated/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
   '/factures_/$id/modifier': typeof FacturesIdModifierRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/contribution'
     | '/echeances'
     | '/impot'
@@ -110,10 +136,12 @@ export interface FileRouteTypes {
     | '/factures/$id'
     | '/factures/nouvelle'
     | '/factures/'
+    | '/admin/utilisateurs'
     | '/factures/$id/modifier'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/contribution'
     | '/echeances'
     | '/impot'
@@ -121,10 +149,13 @@ export interface FileRouteTypes {
     | '/factures/$id'
     | '/factures/nouvelle'
     | '/factures'
+    | '/admin/utilisateurs'
     | '/factures/$id/modifier'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
+    | '/auth'
     | '/contribution'
     | '/echeances'
     | '/impot'
@@ -132,11 +163,14 @@ export interface FileRouteTypes {
     | '/factures/$id'
     | '/factures/nouvelle'
     | '/factures/'
+    | '/_authenticated/admin/utilisateurs'
     | '/factures_/$id/modifier'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   ContributionRoute: typeof ContributionRoute
   EcheancesRoute: typeof EcheancesRoute
   ImpotRoute: typeof ImpotRoute
@@ -154,6 +188,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contribution': {
@@ -205,6 +253,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FacturesNouvelleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/utilisateurs': {
+      id: '/_authenticated/admin/utilisateurs'
+      path: '/admin/utilisateurs'
+      fullPath: '/admin/utilisateurs'
+      preLoaderRoute: typeof AuthenticatedAdminUtilisateursRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/factures_/$id/modifier': {
       id: '/factures_/$id/modifier'
       path: '/factures/$id/modifier'
@@ -215,8 +270,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminUtilisateursRoute: typeof AuthenticatedAdminUtilisateursRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminUtilisateursRoute: AuthenticatedAdminUtilisateursRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   ContributionRoute: ContributionRoute,
   EcheancesRoute: EcheancesRoute,
   ImpotRoute: ImpotRoute,
