@@ -51,7 +51,7 @@ export const listUsers = createServerFn({ method: "GET" })
       if (error) throw new Error(error.message);
       for (const u of data.users) {
         const meta = (u.user_metadata ?? {}) as Record<string, unknown>;
-        const name = (meta.full_name ?? meta.name ?? meta.display_name ?? null) as string | null;
+        const name = (meta["full_name"] ?? meta["name"] ?? meta["display_name"] ?? null) as string | null;
         users.push({
           id: u.id,
           email: u.email ?? null,
