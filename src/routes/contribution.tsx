@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { Badge, Button, Card, Field, Input, PageTitle, Select } from "@/components/ui-kit";
 import { formatDate, formatMoney, useI18n } from "@/lib/i18n";
+import { calculationText } from "@/lib/calculation-text";
 import { useStore } from "@/lib/store";
 import {
   computeSocial,
@@ -30,7 +31,8 @@ export const Route = createFileRoute("/contribution")({
 });
 
 function SocialPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const text = (value: string) => calculationText(value, lang);
   const { data, update } = useStore();
   const [form, setForm] = useState<SocialInputs>(
     normalizeSocialInputs(data.social?.inputs, data.profile),
@@ -82,7 +84,7 @@ function SocialPage() {
               <Select value={form.tranche} onChange={(e) => set({ tranche: Number(e.target.value) })}>
                 {Array.from({ length: trancheCount }, (_, i) => (
                   <option key={i} value={i + 1}>
-                    {t("tranche")} {i + 1} — {formatMoney(paramsFor(Number(form.period) || 2026).params.other[i]!)} / {t("per_quarter")}
+                    {t("tranche")} {i + 1} — {formatMoney(paramsFor(Number(form.period) || 2026).params.other[i] ?? 0)} / {t("per_quarter")}
                   </option>
                 ))}
               </Select>
@@ -124,7 +126,7 @@ function SocialPage() {
                 {t("social_exempt_until")} {formatDate(d.exemptionEndDate)}
               </p>
             )}
-            <p className="mt-3 text-sm text-muted-foreground">{result.explanation}</p>
+            <p className="mt-3 text-sm text-muted-foreground">{text(result.explanation)}</p>
           </Card>
 
           <Card>
@@ -134,8 +136,8 @@ function SocialPage() {
             <dl className="mt-3 grid gap-2 text-sm">
               {result.steps.map((s) => (
                 <div key={s.label} className="flex justify-between gap-3 border-b border-border pb-2">
-                  <dt className="text-muted-foreground">{s.label}</dt>
-                  <dd className="font-semibold">{s.value}</dd>
+                  <dt className="text-muted-foreground">{text(s.label)}</dt>
+                  <dd className="font-semibold">{text(s.value)}</dd>
                 </div>
               ))}
             </dl>
