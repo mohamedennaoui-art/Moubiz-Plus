@@ -1,5 +1,7 @@
 # Moubiz Plus — MVP roadmap
 
+- [ ] Translate remaining tax/social page text in AR only and verify both pages; preserve FR, values and rules.
+
 - [x] Light mode theme: pure white background, dark text, high-contrast accents
 - [x] FR/AR bilingual with RTL support + language switcher
 - [x] Dashboard with 4 cards (impôt, contribution, échéance, factures)

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { Button, Card, Field, Input, PageTitle, Select } from "@/components/ui-kit";
 import { formatMoney, useI18n } from "@/lib/i18n";
+import { calculationText } from "@/lib/calculation-text";
 import { useStore } from "@/lib/store";
 import { computeTax, currentQuarter } from "@/lib/engines/tax";
 import type { ActivityType, LocationType, TaxPeriod } from "@/lib/engines/types";
@@ -17,13 +18,16 @@ export const Route = createFileRoute("/impot")({
       },
       { property: "og:title", content: "Calcul de l'impôt — Moubiz Plus" },
       { property: "og:description", content: "Estimation simple de votre impôt." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: TaxPage,
 });
 
 function TaxPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const text = (value: string) => calculationText(value, lang);
   const { data, update } = useStore();
   const [period, setPeriod] = useState(data.tax?.inputs.period ?? String(new Date().getFullYear()));
   const [turnover, setTurnover] = useState(String(data.tax?.inputs.turnover ?? ""));
@@ -131,26 +135,26 @@ function TaxPage() {
               </p>
               {details?.theoreticalTax != null && (
                 <p className="mt-2 text-sm font-semibold">
-                  Montant théorique : {formatMoney(details.theoreticalTax)} · Montant exigible :{" "}
+                  {text("Montant théorique")} : {formatMoney(details.theoreticalTax)} · {text("Montant exigible")} :{" "}
                   {formatMoney(record.result.amount ?? 0)}
                 </p>
               )}
               {exempt && (
                 <p className="mt-3 inline-block rounded-full border border-border px-3 py-1 text-xs font-bold">
-                  Exonéré — période d'exonération
+                  {text("Exonéré — période d'exonération")}
                   {details?.exemptionEndDate
-                    ? ` · jusqu'au ${new Date(details.exemptionEndDate).toLocaleDateString("fr-FR")}`
+                    ? ` · ${text("jusqu'au")} ${new Date(details.exemptionEndDate).toLocaleDateString("fr-FR")}`
                     : ""}
                 </p>
               )}
-              <p className="mt-2 text-sm text-muted-foreground">{record.result.explanation}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{text(record.result.explanation)}</p>
             </Card>
 
 
             {ceilingWarning && (
               <Card>
                 <p className="rounded-xl border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm font-semibold text-destructive">
-                  {ceilingWarning}
+                  {text(ceilingWarning)}
                 </p>
               </Card>
             )}
@@ -163,8 +167,8 @@ function TaxPage() {
               <dl className="mt-3 grid gap-2 text-sm">
                 {record.result.steps.map((s) => (
                   <div key={s.label} className="flex justify-between gap-3 border-b border-border pb-2">
-                    <dt className="text-muted-foreground">{s.label}</dt>
-                    <dd className="font-semibold">{s.value}</dd>
+                    <dt className="text-muted-foreground">{text(s.label)}</dt>
+                    <dd className="font-semibold">{text(s.value)}</dd>
                   </div>
                 ))}
               </dl>
