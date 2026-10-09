@@ -13,6 +13,10 @@ import { annualTurnover, ceilingStatus } from "@/lib/engines/ceiling";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
+      {
+        name: "google-site-verification",
+        content: "CuUxNpovDLqdoMSAzujquBLtq0pKFptvyDUwpleXUZk",
+      },
       { title: "Moubiz Plus — Assistant du Moubader Dhati" },
       {
         name: "description",
