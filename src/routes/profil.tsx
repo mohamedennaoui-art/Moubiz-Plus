@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { Button, Card, Field, Input, PageTitle, Select } from "@/components/ui-kit";
 import { useI18n } from "@/lib/i18n";
@@ -23,17 +23,36 @@ export const Route = createFileRoute("/profil")({
 
 function ProfilePage() {
   const { t, lang, setLang } = useI18n();
-  const { data, update } = useStore();
+  const { data, update, ready } = useStore();
   const [form, setForm] = useState(data.profile);
   const [saved, setSaved] = useState(false);
+  // True once the user has edited the form: do not overwrite unsaved input.
+  const [dirty, setDirty] = useState(false);
+
+  // Sync the form with the loaded profile once the account data is ready.
+  // Skipped while the user has unsaved edits.
+  useEffect(() => {
+    if (ready && !dirty) setForm(data.profile);
+  }, [ready, data.profile, dirty]);
+
+  // Account switch or sign-out: ready goes false again — forget the previous
+  // account's unsaved edits so the next loaded profile fills the form.
+  useEffect(() => {
+    if (!ready) {
+      setDirty(false);
+      setSaved(false);
+    }
+  }, [ready]);
 
   const set = (patch: Partial<typeof form>) => {
     setForm({ ...form, ...patch });
+    setDirty(true);
     setSaved(false);
   };
 
   const save = () => {
     update({ profile: form });
+    setDirty(false);
     setSaved(true);
   };
 
@@ -128,7 +147,9 @@ function ProfilePage() {
           </Select>
         </Card>
 
-        <Button onClick={save}>{saved ? t("saved") : t("save")}</Button>
+        <Button onClick={save} disabled={!ready}>
+          {saved ? t("saved") : t("save")}
+        </Button>
       </div>
     </AppShell>
   );
