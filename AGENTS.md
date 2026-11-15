@@ -11,5 +11,5 @@
 
 ## Architecture rules
 - Translate tax/social engine messages in the presentation-only calculation-text module; keep engines and stored results language-independent to preserve calculations and French output.
-- Business data (profile, invoices, tax, social) stays in browser localStorage; accounts only gate the admin area — keeps existing modules unchanged.
+- Business data (profile, invoices, tax, social) is stored per connected user in `public.user_data` (JSONB) via `src/lib/store.tsx`; the legacy localStorage key `moubiz_plus_data_v1` is left untouched (no import, no deletion) — its migration is a separate, owner-verified step.
 - Admin access is decided server-side via the `user_roles` table + `has_role`; the owner email in `src/lib/admin.functions.ts` is auto-granted admin only after email confirmation — never trust client checks.
