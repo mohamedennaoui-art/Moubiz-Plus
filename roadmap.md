@@ -13,6 +13,6 @@
 - [x] Bilingual printable PDF invoice
 - [x] Profile page
 - [ ] Accounts + cloud database (needs Lovable Cloud enabled — pending user go-ahead)
-- [ ] Storage sync: move AppData persistence from localStorage to public.user_data per connected user (uploaded spec) — no engine/design changes, keep local key untouched
+- [x] Storage sync: AppData persisted per connected user in public.user_data (upsert on user_id, auth-change reload, race-safe, local key untouched); signed-in sync untested (test user declined)
 - [ ] Google Search Console connection (user declined the connect card — retry on request)
 - [ ] Load validated tax/CNSS rules from the Excel prototype (pending user data)
