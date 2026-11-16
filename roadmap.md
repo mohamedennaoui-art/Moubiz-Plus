@@ -1,6 +1,6 @@
 # Moubiz Plus — MVP roadmap
 
-- [ ] Protect all functional URLs with the shared session gate; retain public auth and homepage metadata, restore requested URLs after login, and verify direct access with and without a session and admin role checks.
+- [x] Protect functional URLs using the shared session gate, preserve local return URLs and public homepage metadata; verified signed-out/owner direct access, refresh, sign-out and 17 access-rule tests. Normal-user live verification blocked by declined temporary test account; email/password return flow not exercised with real credentials.
 
 - [x] Translate remaining tax/social page text in AR only; verified both forms and exempt/payable results, unchanged FR and saved values, 30 engine tests passed.
 
