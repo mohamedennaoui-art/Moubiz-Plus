@@ -13,9 +13,11 @@ import {
 } from "@/lib/engines/invoices";
 import type { InvoiceStatus } from "@/lib/engines/types";
 
-export const Route = createFileRoute("/factures/$id")({
+export const Route = createFileRoute("/_authenticated/factures/$id")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Facture — Moubiz Plus" },
       { name: "description", content: "Facture bilingue prête à imprimer ou à envoyer en PDF." },
       { property: "og:title", content: "Facture — Moubiz Plus" },
@@ -42,7 +44,7 @@ const statusKey: Record<InvoiceStatus, string> = {
 };
 
 function InvoiceDetail() {
-  const { id } = useParams({ from: "/factures/$id" });
+  const { id } = useParams({ from: "/_authenticated/factures/$id" });
   const { t } = useI18n();
   const { data, update, ready } = useStore();
   const invoice = data.invoices.find((i) => i.id === id);

@@ -13,7 +13,7 @@ import {
 } from "@/lib/engines/social";
 import type { SocialInputs } from "@/lib/engines/types";
 
-export const Route = createFileRoute("/contribution")({
+export const Route = createFileRoute("/_authenticated/contribution")({
   head: () => ({
     meta: [
       { title: "Contribution sociale — Moubiz Plus" },

@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { InvoiceForm } from "@/components/InvoiceForm";
 
-export const Route = createFileRoute("/factures/nouvelle")({
+export const Route = createFileRoute("/_authenticated/factures/nouvelle")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Nouvelle facture — Moubiz Plus" },
       {
         name: "description",

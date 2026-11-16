@@ -12,15 +12,16 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as ContributionRouteImport } from './routes/contribution'
-import { Route as EcheancesRouteImport } from './routes/echeances'
-import { Route as ImpotRouteImport } from './routes/impot'
-import { Route as ProfilRouteImport } from './routes/profil'
-import { Route as FacturesIndexRouteImport } from './routes/factures.index'
-import { Route as FacturesIdRouteImport } from './routes/factures.$id'
-import { Route as FacturesNouvelleRouteImport } from './routes/factures.nouvelle'
+import { Route as AuthenticatedContributionRouteImport } from './routes/_authenticated/contribution'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedEcheancesRouteImport } from './routes/_authenticated/echeances'
+import { Route as AuthenticatedImpotRouteImport } from './routes/_authenticated/impot'
+import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedAdminUtilisateursRouteImport } from './routes/_authenticated/admin.utilisateurs'
-import { Route as FacturesIdModifierRouteImport } from './routes/factures_.$id.modifier'
+import { Route as AuthenticatedFacturesIndexRouteImport } from './routes/_authenticated/factures.index'
+import { Route as AuthenticatedFacturesIdRouteImport } from './routes/_authenticated/factures.$id'
+import { Route as AuthenticatedFacturesNouvelleRouteImport } from './routes/_authenticated/factures.nouvelle'
+import { Route as AuthenticatedFacturesIdModifierRouteImport } from './routes/_authenticated/factures_.$id.modifier'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -36,40 +37,31 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ContributionRoute = ContributionRouteImport.update({
-  id: '/contribution',
-  path: '/contribution',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedContributionRoute =
+  AuthenticatedContributionRouteImport.update({
+    id: '/contribution',
+    path: '/contribution',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const EcheancesRoute = EcheancesRouteImport.update({
+const AuthenticatedEcheancesRoute = AuthenticatedEcheancesRouteImport.update({
   id: '/echeances',
   path: '/echeances',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ImpotRoute = ImpotRouteImport.update({
+const AuthenticatedImpotRoute = AuthenticatedImpotRouteImport.update({
   id: '/impot',
   path: '/impot',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ProfilRoute = ProfilRouteImport.update({
+const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
   id: '/profil',
   path: '/profil',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FacturesIndexRoute = FacturesIndexRouteImport.update({
-  id: '/factures/',
-  path: '/factures/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FacturesIdRoute = FacturesIdRouteImport.update({
-  id: '/factures/$id',
-  path: '/factures/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FacturesNouvelleRoute = FacturesNouvelleRouteImport.update({
-  id: '/factures/nouvelle',
-  path: '/factures/nouvelle',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminUtilisateursRoute =
   AuthenticatedAdminUtilisateursRouteImport.update({
@@ -77,52 +69,73 @@ const AuthenticatedAdminUtilisateursRoute =
     path: '/admin/utilisateurs',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const FacturesIdModifierRoute = FacturesIdModifierRouteImport.update({
-  id: '/factures_/$id/modifier',
-  path: '/factures/$id/modifier',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedFacturesIndexRoute =
+  AuthenticatedFacturesIndexRouteImport.update({
+    id: '/factures/',
+    path: '/factures/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedFacturesIdRoute = AuthenticatedFacturesIdRouteImport.update({
+  id: '/factures/$id',
+  path: '/factures/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedFacturesNouvelleRoute =
+  AuthenticatedFacturesNouvelleRouteImport.update({
+    id: '/factures/nouvelle',
+    path: '/factures/nouvelle',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedFacturesIdModifierRoute =
+  AuthenticatedFacturesIdModifierRouteImport.update({
+    id: '/factures_/$id/modifier',
+    path: '/factures/$id/modifier',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/contribution': typeof ContributionRoute
-  '/echeances': typeof EcheancesRoute
-  '/impot': typeof ImpotRoute
-  '/profil': typeof ProfilRoute
-  '/factures/$id': typeof FacturesIdRoute
-  '/factures/nouvelle': typeof FacturesNouvelleRoute
-  '/factures/': typeof FacturesIndexRoute
+  '/contribution': typeof AuthenticatedContributionRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/echeances': typeof AuthenticatedEcheancesRoute
+  '/impot': typeof AuthenticatedImpotRoute
+  '/profil': typeof AuthenticatedProfilRoute
   '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
-  '/factures/$id/modifier': typeof FacturesIdModifierRoute
+  '/factures/$id': typeof AuthenticatedFacturesIdRoute
+  '/factures/nouvelle': typeof AuthenticatedFacturesNouvelleRoute
+  '/factures/': typeof AuthenticatedFacturesIndexRoute
+  '/factures/$id/modifier': typeof AuthenticatedFacturesIdModifierRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/contribution': typeof ContributionRoute
-  '/echeances': typeof EcheancesRoute
-  '/impot': typeof ImpotRoute
-  '/profil': typeof ProfilRoute
-  '/factures/$id': typeof FacturesIdRoute
-  '/factures/nouvelle': typeof FacturesNouvelleRoute
-  '/factures': typeof FacturesIndexRoute
+  '/contribution': typeof AuthenticatedContributionRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/echeances': typeof AuthenticatedEcheancesRoute
+  '/impot': typeof AuthenticatedImpotRoute
+  '/profil': typeof AuthenticatedProfilRoute
   '/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
-  '/factures/$id/modifier': typeof FacturesIdModifierRoute
+  '/factures/$id': typeof AuthenticatedFacturesIdRoute
+  '/factures/nouvelle': typeof AuthenticatedFacturesNouvelleRoute
+  '/factures': typeof AuthenticatedFacturesIndexRoute
+  '/factures/$id/modifier': typeof AuthenticatedFacturesIdModifierRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/contribution': typeof ContributionRoute
-  '/echeances': typeof EcheancesRoute
-  '/impot': typeof ImpotRoute
-  '/profil': typeof ProfilRoute
-  '/factures/$id': typeof FacturesIdRoute
-  '/factures/nouvelle': typeof FacturesNouvelleRoute
-  '/factures/': typeof FacturesIndexRoute
+  '/_authenticated/contribution': typeof AuthenticatedContributionRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/echeances': typeof AuthenticatedEcheancesRoute
+  '/_authenticated/impot': typeof AuthenticatedImpotRoute
+  '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/admin/utilisateurs': typeof AuthenticatedAdminUtilisateursRoute
-  '/factures_/$id/modifier': typeof FacturesIdModifierRoute
+  '/_authenticated/factures/$id': typeof AuthenticatedFacturesIdRoute
+  '/_authenticated/factures/nouvelle': typeof AuthenticatedFacturesNouvelleRoute
+  '/_authenticated/factures/': typeof AuthenticatedFacturesIndexRoute
+  '/_authenticated/factures_/$id/modifier': typeof AuthenticatedFacturesIdModifierRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -130,55 +143,50 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/contribution'
+    | '/dashboard'
     | '/echeances'
     | '/impot'
     | '/profil'
+    | '/admin/utilisateurs'
     | '/factures/$id'
     | '/factures/nouvelle'
     | '/factures/'
-    | '/admin/utilisateurs'
     | '/factures/$id/modifier'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/contribution'
+    | '/dashboard'
     | '/echeances'
     | '/impot'
     | '/profil'
+    | '/admin/utilisateurs'
     | '/factures/$id'
     | '/factures/nouvelle'
     | '/factures'
-    | '/admin/utilisateurs'
     | '/factures/$id/modifier'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
-    | '/contribution'
-    | '/echeances'
-    | '/impot'
-    | '/profil'
-    | '/factures/$id'
-    | '/factures/nouvelle'
-    | '/factures/'
+    | '/_authenticated/contribution'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/echeances'
+    | '/_authenticated/impot'
+    | '/_authenticated/profil'
     | '/_authenticated/admin/utilisateurs'
-    | '/factures_/$id/modifier'
+    | '/_authenticated/factures/$id'
+    | '/_authenticated/factures/nouvelle'
+    | '/_authenticated/factures/'
+    | '/_authenticated/factures_/$id/modifier'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  ContributionRoute: typeof ContributionRoute
-  EcheancesRoute: typeof EcheancesRoute
-  ImpotRoute: typeof ImpotRoute
-  ProfilRoute: typeof ProfilRoute
-  FacturesIdRoute: typeof FacturesIdRoute
-  FacturesNouvelleRoute: typeof FacturesNouvelleRoute
-  FacturesIndexRoute: typeof FacturesIndexRoute
-  FacturesIdModifierRoute: typeof FacturesIdModifierRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -204,54 +212,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/contribution': {
-      id: '/contribution'
+    '/_authenticated/contribution': {
+      id: '/_authenticated/contribution'
       path: '/contribution'
       fullPath: '/contribution'
-      preLoaderRoute: typeof ContributionRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedContributionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/echeances': {
-      id: '/echeances'
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/echeances': {
+      id: '/_authenticated/echeances'
       path: '/echeances'
       fullPath: '/echeances'
-      preLoaderRoute: typeof EcheancesRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedEcheancesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/impot': {
-      id: '/impot'
+    '/_authenticated/impot': {
+      id: '/_authenticated/impot'
       path: '/impot'
       fullPath: '/impot'
-      preLoaderRoute: typeof ImpotRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedImpotRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/profil': {
-      id: '/profil'
+    '/_authenticated/profil': {
+      id: '/_authenticated/profil'
       path: '/profil'
       fullPath: '/profil'
-      preLoaderRoute: typeof ProfilRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/factures/': {
-      id: '/factures/'
-      path: '/factures'
-      fullPath: '/factures/'
-      preLoaderRoute: typeof FacturesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/factures/$id': {
-      id: '/factures/$id'
-      path: '/factures/$id'
-      fullPath: '/factures/$id'
-      preLoaderRoute: typeof FacturesIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/factures/nouvelle': {
-      id: '/factures/nouvelle'
-      path: '/factures/nouvelle'
-      fullPath: '/factures/nouvelle'
-      preLoaderRoute: typeof FacturesNouvelleRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedProfilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/utilisateurs': {
       id: '/_authenticated/admin/utilisateurs'
@@ -260,22 +254,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUtilisateursRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/factures_/$id/modifier': {
-      id: '/factures_/$id/modifier'
+    '/_authenticated/factures/': {
+      id: '/_authenticated/factures/'
+      path: '/factures'
+      fullPath: '/factures/'
+      preLoaderRoute: typeof AuthenticatedFacturesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/factures/$id': {
+      id: '/_authenticated/factures/$id'
+      path: '/factures/$id'
+      fullPath: '/factures/$id'
+      preLoaderRoute: typeof AuthenticatedFacturesIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/factures/nouvelle': {
+      id: '/_authenticated/factures/nouvelle'
+      path: '/factures/nouvelle'
+      fullPath: '/factures/nouvelle'
+      preLoaderRoute: typeof AuthenticatedFacturesNouvelleRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/factures_/$id/modifier': {
+      id: '/_authenticated/factures_/$id/modifier'
       path: '/factures/$id/modifier'
       fullPath: '/factures/$id/modifier'
-      preLoaderRoute: typeof FacturesIdModifierRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedFacturesIdModifierRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedContributionRoute: typeof AuthenticatedContributionRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedEcheancesRoute: typeof AuthenticatedEcheancesRoute
+  AuthenticatedImpotRoute: typeof AuthenticatedImpotRoute
+  AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedAdminUtilisateursRoute: typeof AuthenticatedAdminUtilisateursRoute
+  AuthenticatedFacturesIdRoute: typeof AuthenticatedFacturesIdRoute
+  AuthenticatedFacturesNouvelleRoute: typeof AuthenticatedFacturesNouvelleRoute
+  AuthenticatedFacturesIndexRoute: typeof AuthenticatedFacturesIndexRoute
+  AuthenticatedFacturesIdModifierRoute: typeof AuthenticatedFacturesIdModifierRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedContributionRoute: AuthenticatedContributionRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedEcheancesRoute: AuthenticatedEcheancesRoute,
+  AuthenticatedImpotRoute: AuthenticatedImpotRoute,
+  AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedAdminUtilisateursRoute: AuthenticatedAdminUtilisateursRoute,
+  AuthenticatedFacturesIdRoute: AuthenticatedFacturesIdRoute,
+  AuthenticatedFacturesNouvelleRoute: AuthenticatedFacturesNouvelleRoute,
+  AuthenticatedFacturesIndexRoute: AuthenticatedFacturesIndexRoute,
+  AuthenticatedFacturesIdModifierRoute: AuthenticatedFacturesIdModifierRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -285,14 +318,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  ContributionRoute: ContributionRoute,
-  EcheancesRoute: EcheancesRoute,
-  ImpotRoute: ImpotRoute,
-  ProfilRoute: ProfilRoute,
-  FacturesIdRoute: FacturesIdRoute,
-  FacturesNouvelleRoute: FacturesNouvelleRoute,
-  FacturesIndexRoute: FacturesIndexRoute,
-  FacturesIdModifierRoute: FacturesIdModifierRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

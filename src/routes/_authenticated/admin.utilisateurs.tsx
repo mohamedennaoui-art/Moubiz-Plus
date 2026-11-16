@@ -7,6 +7,10 @@ import { getAdminStatus, listUsers } from "@/lib/admin.functions";
 export const Route = createFileRoute("/_authenticated/admin/utilisateurs")({
   head: () => ({
     meta: [
+      { property: "og:title", content: "Administration — Utilisateurs | Moubiz Plus" },
+      { property: "og:description", content: "Espace réservé au propriétaire de Moubiz Plus." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Administration — Utilisateurs | Moubiz Plus" },
       { name: "description", content: "Espace réservé au propriétaire de Moubiz Plus." },
       { name: "robots", content: "noindex" },

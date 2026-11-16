@@ -6,9 +6,11 @@ import { useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 import type { ActivityType } from "@/lib/engines/types";
 
-export const Route = createFileRoute("/profil")({
+export const Route = createFileRoute("/_authenticated/profil")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Mon profil — Moubiz Plus" },
       {
         name: "description",
