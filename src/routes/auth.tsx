@@ -5,9 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { safeReturnTo } from "@/lib/auth-navigation";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
-    redirect: typeof search.redirect === "string" ? safeReturnTo(search.redirect) : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } =>
+    typeof search["redirect"] === "string" ? { redirect: safeReturnTo(search["redirect"]) } : {},
   head: () => ({
     meta: [
       { title: "Connexion | Moubiz Plus" },
