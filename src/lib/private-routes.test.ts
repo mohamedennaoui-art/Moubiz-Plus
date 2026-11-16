@@ -4,6 +4,7 @@ vi.mock("@/integrations/supabase/client", () => ({ supabase: { auth: { getUser }
 vi.mock("@tanstack/react-router", () => ({
   createFileRoute: () => (options: unknown) => options,
   Outlet: () => null,
+  lazyRouteComponent: () => () => null,
   redirect: (options: unknown) => ({ redirect: options }),
 }));
 import { Route } from "../routes/_authenticated/route";
