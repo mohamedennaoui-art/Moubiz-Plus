@@ -12,9 +12,11 @@ import {
 } from "@/lib/engines/invoices";
 import type { InvoiceStatus } from "@/lib/engines/types";
 
-export const Route = createFileRoute("/factures/")({
+export const Route = createFileRoute("/_authenticated/factures/")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Mes factures — Moubiz Plus" },
       {
         name: "description",

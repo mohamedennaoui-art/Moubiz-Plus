@@ -8,7 +8,7 @@ import { useStore } from "@/lib/store";
 import { computeTax, currentQuarter } from "@/lib/engines/tax";
 import type { ActivityType, LocationType, TaxPeriod } from "@/lib/engines/types";
 
-export const Route = createFileRoute("/impot")({
+export const Route = createFileRoute("/_authenticated/impot")({
   head: () => ({
     meta: [
       { title: "Calcul de l'impôt — Moubiz Plus" },

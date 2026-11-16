@@ -5,9 +5,11 @@ import { Button, Card } from "@/components/ui-kit";
 import { useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 
-export const Route = createFileRoute("/factures_/$id/modifier")({
+export const Route = createFileRoute("/_authenticated/factures_/$id/modifier")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Modifier la facture — Moubiz Plus" },
       { name: "description", content: "Modifiez une facture au statut brouillon." },
       { property: "og:title", content: "Modifier la facture — Moubiz Plus" },
@@ -18,7 +20,7 @@ export const Route = createFileRoute("/factures_/$id/modifier")({
 });
 
 function EditInvoicePage() {
-  const { id } = useParams({ from: "/factures_/$id/modifier" });
+  const { id } = useParams({ from: "/_authenticated/factures_/$id/modifier" });
   const { t } = useI18n();
   const { data, ready } = useStore();
   const invoice = data.invoices.find((i) => i.id === id);
