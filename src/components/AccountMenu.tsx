@@ -49,8 +49,7 @@ export function AccountMenu() {
 
   async function signOut() {
     await qc.cancelQueries();
-    qc.removeQueries({ queryKey: ["admin-status"] });
-    qc.removeQueries({ queryKey: ["admin-users"] });
+    qc.clear();
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }

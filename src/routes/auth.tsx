@@ -2,14 +2,20 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
+import { safeReturnTo } from "@/lib/auth-navigation";
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
+    redirect: typeof search.redirect === "string" ? safeReturnTo(search.redirect) : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Connexion | Moubiz Plus" },
       { name: "description", content: "Créez votre compte Moubiz Plus ou connectez-vous par email." },
       { property: "og:title", content: "Connexion | Moubiz Plus" },
       { property: "og:description", content: "Créez votre compte Moubiz Plus ou connectez-vous par email." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AuthPage,
@@ -17,6 +23,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { redirect: returnTo } = Route.useSearch();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,7 +44,7 @@ function AuthPage() {
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setMsg("Email ou mot de passe incorrect, ou email non confirmé.");
-      else navigate({ to: "/" });
+      else await navigate({ href: safeReturnTo(returnTo), replace: true });
     }
     setBusy(false);
   }
