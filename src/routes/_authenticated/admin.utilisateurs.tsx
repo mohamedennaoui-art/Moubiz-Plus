@@ -1,10 +1,17 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { AppShell } from "@/components/AppShell";
 import { getAdminStatus, listUsers } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/utilisateurs")({
+  // The parent session gate runs first. Check the role on the server before
+  // rendering this page, including when returning with a different account.
+  loader: async () => {
+    const status = await getAdminStatus();
+    if (!status.isAdmin) throw redirect({ to: "/dashboard", replace: true });
+  },
+  shouldReload: true,
   head: () => ({
     meta: [
       { property: "og:title", content: "Administration — Utilisateurs | Moubiz Plus" },
@@ -25,18 +32,19 @@ const fmt = (iso: string | null) =>
     : "—";
 
 function AdminUsersPage() {
+  const { user } = Route.useRouteContext();
   const status = useServerFn(getAdminStatus);
   const list = useServerFn(listUsers);
-  const adminQ = useQuery({ queryKey: ["admin-status"], queryFn: () => status() });
+  const adminQ = useQuery({ queryKey: ["admin-status", user.id], queryFn: () => status() });
   const usersQ = useQuery({
-    queryKey: ["admin-users"],
+    queryKey: ["admin-users", user.id],
     queryFn: () => list(),
-    enabled: adminQ.data?.isAdmin === true,
+    enabled: !adminQ.isError && adminQ.data?.isAdmin === true,
   });
 
   if (adminQ.isLoading) return <AppShell>{null}</AppShell>;
 
-  if (!adminQ.data?.isAdmin) {
+  if (adminQ.isError || !adminQ.data?.isAdmin) {
     return (
       <AppShell>
         <div className="rounded-xl border border-border bg-card p-6 text-center">
