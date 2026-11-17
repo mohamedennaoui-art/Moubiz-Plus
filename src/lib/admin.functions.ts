@@ -8,12 +8,13 @@ type Ctx = { supabase: any; userId: string };
 
 async function isAdmin({ supabase, userId }: Ctx): Promise<boolean> {
   const { data: userData, error } = await supabase.auth.getUser();
-  if (error || !userData?.user) return false;
+  if (error || !userData?.user || userData.user.id !== userId) return false;
   const u = userData.user;
 
   // Grant the admin role to the owner once their email is confirmed.
   if (u.email?.toLowerCase() === OWNER_EMAIL && u.email_confirmed_at) {
-    const { data: already } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+    const { data: already, error: roleError } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+    if (roleError) return false;
     if (!already) {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       await supabaseAdmin
@@ -22,8 +23,8 @@ async function isAdmin({ supabase, userId }: Ctx): Promise<boolean> {
     }
   }
 
-  const { data } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
-  return data === true;
+  const { data, error: roleError } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
+  return !roleError && data === true;
 }
 
 export const getAdminStatus = createServerFn({ method: "GET" })

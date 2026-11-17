@@ -1,5 +1,7 @@
 # Moubiz Plus — MVP roadmap
 
+- [x] Harden administration-only access: role checked before rendering, user-scoped caches, fail-closed server authorization; 22 access tests pass (including non-admin listUsers 403), signed-out redirect and owner access verified live. Non-admin live session not exercised: no authorized account selected; no data changed and no publication.
+
 - [x] Protect functional URLs using the shared session gate, preserve local return URLs and public homepage metadata; verified signed-out/owner direct access, refresh, sign-out and 17 access-rule tests. Normal-user live verification blocked by declined temporary test account; email/password return flow not exercised with real credentials.
 
 - [x] Translate remaining tax/social page text in AR only; verified both forms and exempt/payable results, unchanged FR and saved values, 30 engine tests passed.
