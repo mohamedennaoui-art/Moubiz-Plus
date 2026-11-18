@@ -15,4 +15,7 @@ describe("authentication return destination", () => {
     expect(safeReturnTo("/auth?redirect=/factures")).toBe("/");
     expect(safeReturnTo(undefined)).toBe("/");
   });
+  it("preserves the personal space requested by the homepage", () => {
+    expect(safeReturnTo("/dashboard")).toBe("/dashboard");
+  });
 });

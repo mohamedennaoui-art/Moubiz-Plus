@@ -77,6 +77,13 @@
   --border: oklch(0.925 0.006 240);
   --input: oklch(0.88 0.01 240);
   --ring: oklch(0.7 0.12 192);
+  --landing-overlay: linear-gradient(90deg, var(--page) 0%, oklch(0.93 0.026 240 / 0.97) 24%, oklch(0.93 0.026 240 / 0.8) 43%, oklch(0.93 0.026 240 / 0) 72%);
+  --landing-overlay-mobile: linear-gradient(90deg, oklch(0.93 0.026 240 / 0.97), oklch(0.93 0.026 240 / 0.87));
+}
+
+.landing-scrim { background: var(--landing-overlay); }
+@media (max-width: 1023px) {
+  .landing-scrim { background: var(--landing-overlay-mobile); }
 }
 
 @layer base {
