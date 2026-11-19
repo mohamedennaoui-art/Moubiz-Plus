@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { annualTurnover, ceilingStatus } from "./ceiling";
+import { annualTurnover, annualTurnoverSummary, ceilingStatus, ceilingRules, ceilingLevel } from "./ceiling";
 import type { Invoice } from "./types";
 
 const inv = (over: Partial<Invoice>): Invoice => ({
@@ -13,6 +13,27 @@ const inv = (over: Partial<Invoice>): Invoice => ({
   paid: 0,
   status: "sent",
   ...over,
+});
+
+describe("configured ceiling and annual currency completeness", () => {
+  it.each([[60000, "p80"], [67500, "p90"], [71250, "p95"], [75000, "p100"]] as const)("preserves the threshold at %s", (amount, level) => {
+    expect(ceilingLevel(amount)).toBe(level);
+  });
+  it("uses the configured thresholds rather than duplicate constants", () => {
+    expect(ceilingRules.thresholds).toEqual([100, 95, 90, 80]);
+    expect(ceilingLevel(37500, { ...ceilingRules, thresholds: [100, 70, 60, 50] })).toBe("p80");
+  });
+  it("converts EUR and USD and filters drafts and other exercises", () => {
+    expect(annualTurnover([inv({}), inv({ currency: "EUR" }), inv({ currency: "USD" }), inv({ date: "2025-01-01" }), inv({ status: "draft" })], 2026, { TND: 1, EUR: 3, USD: 2 })).toBe(6000);
+  });
+  it("returns unknown annual totals with the affected currency", () => {
+    const list = [inv({}), inv({ currency: "USD" })];
+    expect(annualTurnover(list, 2026, { TND: 1, EUR: 3, USD: 0 })).toBeNull();
+    expect(annualTurnoverSummary(list, 2026, { TND: 1, EUR: 3, USD: 0 })).toEqual({ amount: null, missingCurrencies: ["USD"] });
+  });
+  it("does not require a rate for excluded exercises or drafts", () => {
+    expect(annualTurnover([inv({}), inv({ currency: "EUR", date: "2025-01-01" }), inv({ currency: "USD", status: "draft" })], 2026, { TND: 1, EUR: 0, USD: 0 })).toBe(1000);
+  });
 });
 
 describe("ceiling engine", () => {

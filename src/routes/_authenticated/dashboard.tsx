@@ -7,8 +7,8 @@ import { Badge, Button, Card, Select } from "@/components/ui-kit";
 import { formatDate, formatMoney, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 import { buildYear, nextObligation } from "@/lib/engines/deadline-engine";
-import { invoiceRemaining, invoiceTotal, paymentSummary } from "@/lib/engines/invoices";
-import { annualTurnover, ceilingStatus } from "@/lib/engines/ceiling";
+import { financialSummary } from "@/lib/engines/invoices";
+import { annualTurnoverSummary, ceilingRules, ceilingStatus } from "@/lib/engines/ceiling";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -48,13 +48,17 @@ function Dashboard() {
         buildYear(new Date().getFullYear(), data.profile.registrationDate, data.quarterEntries),
       )
     : null;
-  const totalInvoiced = data.invoices.reduce((s, i) => s + invoiceTotal(i), 0);
-  const totalPaid = data.invoices.reduce((s, i) => s + (i.paid || 0), 0);
-  const totalRemaining = data.invoices.reduce((s, i) => s + invoiceRemaining(i), 0);
-  const summary = paymentSummary(data.invoices, data.profile.rates);
-  const ceiling = ceilingStatus(
-    annualTurnover(data.invoices, ceilingYear, data.profile.rates),
-  );
+  const financial = financialSummary(data.invoices, data.profile.rates);
+  const summary = financial.payments;
+  const annual = annualTurnoverSummary(data.invoices, ceilingYear, data.profile.rates);
+  const ceiling = annual.amount === null ? null : ceilingStatus(annual.amount);
+  const money = (amount: number | null) => amount === null ? t("aggregate_unavailable") : formatMoney(amount);
+  const missing = [...new Set([
+    ...financial.totalInvoiced.missingCurrencies,
+    ...financial.totalPaid.missingCurrencies,
+    ...financial.totalRemaining.missingCurrencies,
+  ])];
+  const rateWarning = (currencies: string[]) => `${t("missing_conversion_rate")} ${currencies.join(", ")}. ${t("incomplete_aggregate_note")}`;
   const ceilingYears = [ceilingYear - 1, ceilingYear, ceilingYear + 1];
 
   const late = next ? next.daysLeft < 0 : false;
@@ -87,8 +91,10 @@ function Dashboard() {
             </Select>
           </div>
           <p className="mt-2 text-2xl font-extrabold tracking-tight">
-            {formatMoney(ceiling.turnover)} / {formatMoney(ceiling.ceiling)}
+            {money(annual.amount)} / {formatMoney(ceilingRules.annualCeiling)}
           </p>
+          {annual.missingCurrencies.length > 0 && <p role="alert" className="mt-3 text-sm text-warning">{rateWarning(annual.missingCurrencies)}</p>}
+          {ceiling && <>
           <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
             <div
               className={
@@ -110,6 +116,7 @@ function Dashboard() {
               {t(ceiling.messageKey as never)}
             </p>
           )}
+          </>}
         </Card>
 
         <Card>
@@ -216,25 +223,26 @@ function Dashboard() {
             </div>
             <div>
               <dt className="text-muted-foreground">{t("total_invoiced")}</dt>
-              <dd className="text-lg font-bold">{formatMoney(totalInvoiced)}</dd>
+              <dd className="text-lg font-bold">{money(financial.totalInvoiced.amount)}</dd>
             </div>
             <div>
               <dt className="text-muted-foreground">{t("total_paid")}</dt>
-              <dd className="text-lg font-bold">{formatMoney(totalPaid)}</dd>
+              <dd className="text-lg font-bold">{money(financial.totalPaid.amount)}</dd>
             </div>
             <div>
               <dt className="text-muted-foreground">{t("total_remaining")}</dt>
-              <dd className="text-lg font-bold">{formatMoney(totalRemaining)}</dd>
+              <dd className="text-lg font-bold">{money(financial.totalRemaining.amount)}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground">{t("unpaid_invoices")}</dt>
+              <dt className="text-muted-foreground">{t("invoices_to_collect")}</dt>
               <dd className="text-lg font-bold">{summary.unpaidCount}</dd>
             </div>
             <div>
               <dt className="text-muted-foreground">{t("to_collect")}</dt>
-              <dd className="text-lg font-bold">{formatMoney(summary.toCollect)}</dd>
+              <dd className="text-lg font-bold">{money(summary.toCollect)}</dd>
             </div>
           </dl>
+          {missing.length > 0 && <p role="alert" className="mt-3 text-sm text-warning">{rateWarning(missing)}</p>}
           <Link to="/factures/nouvelle" className="mt-4 block">
             <Button className="w-full">{t("btn_new_invoice")}</Button>
           </Link>

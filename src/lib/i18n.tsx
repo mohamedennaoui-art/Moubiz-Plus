@@ -43,6 +43,10 @@ export const dict: Dict = {
   total_invoiced: { fr: "Total facturé", ar: "إجمالي الفوترة" },
   total_paid: { fr: "Total payé", ar: "المبلغ المدفوع" },
   total_remaining: { fr: "Reste à payer", ar: "الباقي" },
+  invoices_to_collect: { fr: "Factures avec solde à encaisser", ar: "فواتير بمبالغ متبقية للاستخلاص" },
+  aggregate_unavailable: { fr: "Indéterminé", ar: "غير محدّد" },
+  missing_conversion_rate: { fr: "Taux de conversion absent ou invalide pour :", ar: "سعر التحويل مفقود أو غير صالح للعملة:" },
+  incomplete_aggregate_note: { fr: "Les totaux concernés ne peuvent pas être déterminés. Vérifiez les taux dans votre profil.", ar: "لا يمكن تحديد المجاميع المعنية. تحقّق من أسعار الصرف في حسابك." },
 
   page_tax: { fr: "Calcul de l'impôt", ar: "احتساب الضريبة" },
   page_social: { fr: "Calcul de la contribution sociale", ar: "احتساب المساهمة الاجتماعية" },

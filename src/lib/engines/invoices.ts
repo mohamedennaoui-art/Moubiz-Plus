@@ -21,7 +21,7 @@ export function derivedStatus(inv: Invoice): InvoiceStatus {
 /** Overdue tracking: due date passed and something is still owed. */
 export function invoiceOverdue(inv: Invoice, now = new Date()): { late: boolean; days: number } {
   const due = inv.dueDate ? new Date(inv.dueDate) : null;
-  if (!due || Number.isNaN(due.getTime()) || invoiceRemaining(inv) <= 0) {
+  if (inv.status === "draft" || inv.status === "paid" || !due || Number.isNaN(due.getTime()) || invoiceRemaining(inv) <= 0) {
     return { late: false, days: 0 };
   }
   const a = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
@@ -32,23 +32,44 @@ export function invoiceOverdue(inv: Invoice, now = new Date()): { late: boolean;
 
 /**
  * Dashboard payment summary: unpaid invoice count and amount still to collect,
- * expressed in TND using the user-configured rates (unconvertible ones skipped).
+ * expressed in TND; incomplete aggregates are null, never partial sums.
  */
 export function paymentSummary(invoices: Invoice[], rates: Record<CurrencyCode, number>) {
   const open = invoices.filter((i) => i.status !== "draft" && invoiceRemaining(i) > 0);
-  const toCollect = open.reduce((s, i) => {
-    const rest = invoiceRemaining(i);
-    if (i.currency === "TND") return s + rest;
-    const conv = toTND(rest, i.currency, rates);
-    return conv == null ? s : s + conv;
-  }, 0);
-  return { unpaidCount: open.length, toCollect };
+  const result = sumInTND(open, rates, invoiceRemaining);
+  return { unpaidCount: open.length, toCollect: result.amount, missingCurrencies: result.missingCurrencies };
+}
+
+/** Pure aggregation: never mutate invoices, payments or profile rates. */
+export function sumInTND(invoices: Invoice[], rates: Record<CurrencyCode, number>, value: (invoice: Invoice) => number) {
+  let sum = 0;
+  const missing = new Set<CurrencyCode>();
+  for (const invoice of invoices) {
+    const amount = value(invoice);
+    if (amount === 0) continue;
+    const converted = toTND(amount, invoice.currency, rates);
+    if (converted === null) missing.add(invoice.currency);
+    else sum += converted;
+  }
+  const missingCurrencies = [...missing].sort();
+  return { amount: missingCurrencies.length ? null : sum, missingCurrencies };
+}
+
+export function financialSummary(invoices: Invoice[], rates: Record<CurrencyCode, number>) {
+  const issued = invoices.filter((invoice) => invoice.status !== "draft");
+  return {
+    totalInvoiced: sumInTND(issued, rates, invoiceTotal),
+    totalPaid: sumInTND(issued, rates, (invoice) => invoice.paid || 0),
+    totalRemaining: sumInTND(issued, rates, invoiceRemaining),
+    payments: paymentSummary(issued, rates),
+  };
 }
 
 /** Currency conversion component — rates are configurable, none invented. */
 export function toTND(amount: number, currency: CurrencyCode, rates: Record<CurrencyCode, number>) {
+  if (currency === "TND") return amount;
   const rate = rates[currency];
-  if (!rate || !Number.isFinite(rate)) return null;
+  if (!Number.isFinite(rate) || rate <= 0) return null;
   return amount * rate;
 }
 

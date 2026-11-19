@@ -5,6 +5,8 @@ import {
   invoiceRemaining,
   paymentSummary,
   syncInvoiceStatus,
+  financialSummary,
+  toTND,
 } from "./invoices";
 import type { Invoice } from "./types";
 
@@ -62,7 +64,7 @@ describe("invoice payment tracking", () => {
   });
   it("dashboard summary ignores drafts", () => {
     const list = [base, { ...base, id: "i2", status: "draft" as const }];
-    expect(paymentSummary(list, rates)).toEqual({ unpaidCount: 1, toCollect: 1000 });
+    expect(paymentSummary(list, rates)).toEqual({ unpaidCount: 1, toCollect: 1000, missingCurrencies: [] });
   });
   it("F-2026-002: draft, 200 paid on 1000 total → partial saved, 800 remaining", () => {
     const draft: Invoice = { ...base, number: "F-2026-002", status: "draft", paid: 200 };
@@ -71,5 +73,67 @@ describe("invoice payment tracking", () => {
     expect(invoiceRemaining(saved)).toBe(800);
     expect(syncInvoiceStatus({ ...draft, paid: 1000 }).status).toBe("paid");
     expect(syncInvoiceStatus({ ...draft, paid: 0 }).status).toBe("draft");
+  });
+});
+
+describe("invoice overdue exclusions", () => {
+  const now = new Date("2026-02-20T12:00:00Z");
+  it("never marks an expired draft overdue", () => {
+    expect(invoiceOverdue({ ...base, status: "draft" }, now)).toEqual({ late: false, days: 0 });
+  });
+  it("marks an expired sent invoice overdue", () => {
+    expect(invoiceOverdue(base, now)).toEqual({ late: true, days: 10 });
+  });
+  it("marks an expired partial invoice overdue with 800 remaining", () => {
+    expect(invoiceOverdue({ ...base, status: "partial", paid: 200 }, now).late).toBe(true);
+    expect(invoiceRemaining({ ...base, paid: 200 })).toBe(800);
+  });
+  it("marks an expired unpaid invoice overdue", () => {
+    expect(invoiceOverdue({ ...base, status: "unpaid" }, now).late).toBe(true);
+  });
+  it("never marks a recorded paid invoice overdue", () => {
+    expect(invoiceOverdue({ ...base, status: "paid", paid: 1000 }, now).late).toBe(false);
+    expect(invoiceOverdue({ ...base, status: "paid", paid: 200 }, now).late).toBe(false);
+  });
+  it.each(["2026-02-20", "2026-02-21", "", "invalid"])("does not mark due today, tomorrow, absent or invalid date %s overdue", (dueDate) => {
+    expect(invoiceOverdue({ ...base, dueDate }, now)).toEqual({ late: false, days: 0 });
+  });
+});
+
+describe("TND financial aggregates", () => {
+  const exchange = { TND: 1, EUR: 3, USD: 2 };
+  it.each([["TND", 100], ["EUR", 300], ["USD", 200]] as const)("converts %s before addition", (currency, expected) => {
+    expect(toTND(100, currency, exchange)).toBe(expected);
+  });
+  it.each([0, -1, NaN, Infinity, undefined])("rejects missing or invalid rate %s", (rate) => {
+    const invalid = { ...exchange, EUR: rate } as typeof exchange;
+    expect(toTND(100, "EUR", invalid)).toBeNull();
+    expect(financialSummary([{ ...base, currency: "EUR", paid: 200 }], invalid).totalInvoiced).toEqual({ amount: null, missingCurrencies: ["EUR"] });
+  });
+  it("excludes drafts, keeps all exercises and aligns remaining with to collect", () => {
+    const invoices: Invoice[] = [
+      { ...base, paid: 200 },
+      { ...base, currency: "EUR", paid: 200, status: "partial" },
+      { ...base, currency: "USD", paid: 1000, status: "paid", date: "2025-01-01" },
+      { ...base, status: "draft", paid: 0 },
+    ];
+    const snapshot = JSON.stringify(invoices);
+    const result = financialSummary(invoices, exchange);
+    expect(result.totalInvoiced.amount).toBe(6000);
+    expect(result.totalPaid.amount).toBe(2800);
+    expect(result.totalRemaining.amount).toBe(3200);
+    expect(result.payments.toCollect).toBe(3200);
+    expect(result.payments.unpaidCount).toBe(2);
+    expect(invoices.length).toBe(4);
+    expect(JSON.stringify(invoices)).toBe(snapshot);
+  });
+  it("does not present incomplete sums as exact", () => {
+    const result = financialSummary([base, { ...base, currency: "EUR", paid: 200 }], rates);
+    expect(result.totalInvoiced.amount).toBeNull();
+    expect(result.totalPaid.amount).toBeNull();
+    expect(result.totalRemaining.amount).toBeNull();
+    expect(result.payments.toCollect).toBeNull();
+    expect(result.payments.missingCurrencies).toEqual(["EUR"]);
+    expect(result.payments.unpaidCount).toBe(2);
   });
 });

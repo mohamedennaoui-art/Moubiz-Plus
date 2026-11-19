@@ -7,7 +7,7 @@
  */
 
 import type { CurrencyCode, Invoice } from "./types";
-import { invoiceTotal, toTND } from "./invoices";
+import { invoiceTotal, sumInTND } from "./invoices";
 
 export type CeilingRules = {
   version: string;
@@ -26,23 +26,23 @@ export type CeilingLevel = "ok" | "p80" | "p90" | "p95" | "p100" | "above";
 
 /**
  * Annual turnover from finalised invoices of a calendar year.
- * Drafts and cancelled invoices are excluded; foreign currencies use the
- * user-configured rates (an invoice with no rate available is skipped).
+ * Drafts are excluded; foreign currencies use the user-configured rates.
+ * An unavailable conversion makes the total unknown, not artificially lower.
  */
 export function annualTurnover(
   invoices: Invoice[],
   year: number,
   rates: Record<CurrencyCode, number>,
-): number {
-  return invoices.reduce((sum, inv) => {
-    if (inv.status === "draft") return sum;
-    const d = new Date(inv.date);
-    if (Number.isNaN(d.getTime()) || d.getFullYear() !== year) return sum;
-    const total = invoiceTotal(inv);
-    if (inv.currency === "TND") return sum + total;
-    const converted = toTND(total, inv.currency, rates);
-    return converted == null ? sum : sum + converted;
-  }, 0);
+): number | null {
+  return annualTurnoverSummary(invoices, year, rates).amount;
+}
+
+export function annualTurnoverSummary(invoices: Invoice[], year: number, rates: Record<CurrencyCode, number>) {
+  const selected = invoices.filter((invoice) => {
+    const date = new Date(invoice.date);
+    return invoice.status !== "draft" && !Number.isNaN(date.getTime()) && date.getUTCFullYear() === year;
+  });
+  return sumInTND(selected, rates, invoiceTotal);
 }
 
 export function ceilingPercent(turnover: number, rules: CeilingRules = ceilingRules): number {
@@ -53,10 +53,9 @@ export function ceilingPercent(turnover: number, rules: CeilingRules = ceilingRu
 export function ceilingLevel(turnover: number, rules: CeilingRules = ceilingRules): CeilingLevel {
   const p = ceilingPercent(turnover, rules);
   if (turnover > rules.annualCeiling) return "above";
-  if (p >= 100) return "p100";
-  if (p >= 95) return "p95";
-  if (p >= 90) return "p90";
-  if (p >= 80) return "p80";
+  const levels: CeilingLevel[] = ["p100", "p95", "p90", "p80"];
+  const index = rules.thresholds.findIndex((threshold) => p >= threshold);
+  if (index >= 0) return levels[index] ?? "ok";
   return "ok";
 }
 
