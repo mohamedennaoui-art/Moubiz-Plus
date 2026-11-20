@@ -1,6 +1,6 @@
 # Moubiz Plus — MVP roadmap
 
-- [ ] Correct invoice overdue exclusions, TND financial aggregates/missing-rate warnings and configured ceiling thresholds; test without modifying historical data or publishing.
+- [x] Correct invoice overdue exclusions, TND financial aggregates/missing-rate warnings and configured ceiling thresholds; 80 engine and 26 access tests pass. Browser: owner account read-only (no invoices), plus isolated response fixtures verify multidevise totals, missing-rate warnings and draft detail with writes blocked. No historical data changes or publication.
 
 - [x] Add public bilingual homepage and existing signup/sign-in entry; verified signed-out homepage, 10 private URL redirects, owner dashboard/admin access, FR/AR desktop/mobile, image and verification metadata; 26 access tests pass. No account creation or password login performed, no publication.
 
